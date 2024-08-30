@@ -226,7 +226,7 @@ double costhetastar(int im, int ie, const Event& event)
 int findFinalElectron(const Event& event)
 {
 
-	int eleid = 1;
+	int eleid = 2;
 	bool found = false;
 
 	while(found==false)
