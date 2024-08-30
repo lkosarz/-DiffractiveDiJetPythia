@@ -1,0 +1,15 @@
+#!/bin/tcsh
+#PBS -e /data/home/lkosarze/pythiaHF/Jpsi_pythia/stderr/$PBS_JOBID.err 
+#PBS -o /data/home/lkosarze/pythiaHF/Jpsi_pythia/stdout/$PBS_JOBID.out 
+
+set out_dir = "/data/home/lkosarze/pythiaHF/Jpsi_pythia"
+
+set scriptdir = "/data/home/lkosarze/pythiaHF/Jpsi_pythia"
+setenv LD_LIBRARY_PATH "${LD_LIBRARY_PATH}:${scriptdir}/.${STAR_HOST_SYS}/lib"
+pwd
+#cd ${scriptdir}
+cd $PBS_O_WORKDIR
+pwd
+#make
+pmainjpsi ep_star_hf_tune_v1.1.cmnd ${out_dir}/output/pythiaOut_${PBS_ARRAYID}.root > ${out_dir}/stdout/$PBS_JOBID.out
+pwd

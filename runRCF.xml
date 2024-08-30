@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<job nProcesses="40" simulateSubmission="false">
+
+
+  <stdout URL="file:./output/stdout/$JOBID.out"/>
+  <stderr URL="file:./output/stderr/$JOBID.err"/>
+  <!--<stderr URL="file:&basePath;output/stderr/$JOBID.err"/>-->
+
+  <Generator>
+    <Location>./output/report/</Location>
+    <ScriptLocation>./output/csh/</ScriptLocation>
+    <ListLocation>./output/list/</ListLocation>
+  </Generator>
+
+  <command>
+    starpro
+	setup 64b
+	
+	setenv PYTHIA8 /gpfs01/star/pwg/lkosarz/Pythia/pythia8306
+	setenv LHAPDFSYS /gpfs01/star/pwg/lkosarz/LHAPDF/LHAPDF-6.2.1/
+	setenv PATH ${PATH}:${LHAPDFSYS}/bin
+	setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${LHAPDFSYS}/lib:${PYTHIA8}/lib
+	
+	make
+	./pythiaJpsi_ep ep_star_hf_tune_v1.1.cmnd ep_Jpsi_$JOBINDEX.root
+  </command>
+
+  <output fromScratch="*.root"    toURL="/gpfs01/star/pwg/lkosarz/EIC/JpsiTSSA/output/output/" />
+
+
+  <SandBox installer="ZIP">
+    <Package name="LocalLibraries">
+      <File>file:./ep_star_hf_tune_v1.1.cmnd</File>
+      <File>file:./pythiaJpsi_ep.cpp</File>   
+      <File>file:./Makefile</File>  
+    </Package>
+  </SandBox>
+</job>
