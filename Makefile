@@ -27,7 +27,7 @@ ROOTLIB = `root-config --libdir`
 CXX      =  gcc
 CXXFLAGS = -O  -W -Wall -m64 -std=c++20
 CPPFLAGS = -I$(PYTHIAPATH)/include -I$(ROOTSYS)/include -I$(ROOTINC)
-LDFLAGS  = -L$(PYTHIAPATH)/lib -L$(ROOTSYS)/lib -L$(ROOTLIB) -L$(LHAPDFPATH) -lpythia8 -lstdc++ -lCore -lThread -lRIO -lNet -lHist -lMathCore -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lfreetype -lpthread -lm -ldl
+LDFLAGS  = -L$(PYTHIAPATH)/lib -L$(ROOTSYS)/lib -L$(ROOTLIB) -L$(LHAPDFPATH) -lpythia8 -lHepMC3 -lstdc++ -lCore -lThread -lRIO -lNet -lHist -lMathCore -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lfreetype -lpthread -lm -ldl
 
 #LDFLAGS  = -L$(PYTHIAPATH)/lib/archive -L$(ROOTSYS)/lib -L$(LHAPDFPATH) -lLHAPDF -lpythia8 -llhapdfdummy -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lfreetype -lpthread -lm -ldl
 

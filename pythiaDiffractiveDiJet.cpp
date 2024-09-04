@@ -6,7 +6,10 @@
 #include "TTree.h"
 #include "TFile.h"
 
+#include "Pythia8Plugins/HepMC3.h"
+
 #include "PythiaEvent.h"
+#include "HistogramsPythia.h"
 
 #define PR(x) std::cout << #x << " = " << (x) << std::endl;
 
@@ -14,7 +17,7 @@ using namespace Pythia8;
 
 double costhetastar(int, int, const Event&);
 bool isInAcceptance(int, const Event&);  // acceptance filter
-int MakeEvent(Pythia&, PythiaEvent *eventStore, double);            // event handler (analyze event and
+int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, double);            // event handler (analyze event and
                                          // stores data in tuple)
 int findFinalElectron(const Event& event);
 
@@ -30,6 +33,8 @@ int main(int argc, char* argv[]) {
     //const char* xmlDB    = "/users/PAS2524/lkosarz/Pythia/pythia8312/share/Pythia8/xmldoc";
     const char* xmlDB    = "/opt/local/share/Pythia8/xmldoc";
     
+    bool WriteHepMC = false;
+
 
     //
     //  Create instance of Pythia 
@@ -38,20 +43,21 @@ int main(int argc, char* argv[]) {
                           // stored in the xmldoc directory. This includes
                           // particle data and decay definitions.
     
-    Pythia pythia;
+    Pythia *pythia = new Pythia();
 
 
     // Shorthand for (static) settings
-    Settings& settings = pythia.settings;
+    Settings& settings = pythia->settings;
     
     //  Read in runcard (should be star_hf_tune_v1.0.cmd)
-    pythia.readFile(runcard);  
+    pythia->readFile(runcard);
     cout << "Runcard '" << runcard << "' loaded." << endl;
     
 
-    TFile *histFile  = new TFile(Form("%s_hist.root", rootfile),"RECREATE");
     TFile *treeFile  = new TFile(Form("%s_tree.root", rootfile),"RECREATE");
+    TFile *histFile  = new TFile(Form("%s_hist.root", rootfile),"RECREATE");
 
+    treeFile->cd();
 
     TTree *eventTree = new TTree("eventTree", "Event tree");
     PythiaEvent *eventStore = new PythiaEvent();
@@ -77,7 +83,7 @@ int main(int argc, char* argv[]) {
  
     
     //  Initialize Pythia, ready to go
-    pythia.init();
+    pythia->init();
     
     // List changed or all data
     //if (showCS) settings.listChanged();
@@ -85,6 +91,16 @@ int main(int argc, char* argv[]) {
     settings.listChanged();
     settings.listAll();
     
+
+    Pythia8ToHepMC toHepMC(Form("%s.hepmc3", rootfile));
+    //IO_GenEvent ascii_io(Form("%s.hepmc3", rootfile));
+    //HepMC::WriterRootTree WriterRootfile("file.root")
+    //GenEvent hepmcevt;
+
+
+    histFile->cd();
+    CreateHistograms();
+
     //--------------------------------------------------------------
     //  Event loop
     //--------------------------------------------------------------
@@ -93,7 +109,7 @@ int main(int argc, char* argv[]) {
     
     while (ievent < maxNumberOfEvents) {
         
-        if (!pythia.next()) {
+        if (!pythia->next()) {
             if (++iErrors < maxErrors) continue;
             cout << "Error: too many errors in event generation - check your settings & code" << endl;
             break;
@@ -110,24 +126,38 @@ int main(int argc, char* argv[]) {
         
         // List first few events.
         if (ievent < nList) {
-            pythia.info.list();
-            pythia.process.list();
-            pythia.event.list(false, true, 3);
+            pythia->info.list();
+            pythia->process.list();
+            pythia->event.list(false, true, 3);
         }
+
+
+        if(WriteHepMC)	toHepMC.writeNextEvent(*pythia);
+
+        //GenEvent* hepmcevt = new HepMC::GenEvent();
+        //toHepMC.fill_next_event( *pythia.Pythia8(), hepmcevt);
+        //ascii_io << hepmcevt;
+        //delete hepmcevt;
+
     }
     
     //--------------------------------------------------------------
     //  Finish up
     //--------------------------------------------------------------
     //pythia.statistics();
-    pythia.stat();
+    pythia->stat();
 
     cout << "Writing files" << endl;
 
-	eventTree->Write();
-
+    histFile->cd();
     histFile->Write();
-    treeFile->Write();
+
+    treeFile->cd();
+	eventTree->Write();
+    //treeFile->Write();
+
+	histFile->Close();
+	treeFile->Close();
 
     cout << "Finish!" << endl;
     
@@ -137,9 +167,9 @@ int main(int argc, char* argv[]) {
 //
 //  Event analysis
 //
-int MakeEvent(Pythia& pythia, PythiaEvent *eventStore, double nMaxEvt)
+int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, double nMaxEvt)
 {
-    Event &event = pythia.event;
+    Event &event = pythia->event;
 
 	cout<<"NEW EVENT ---------------------------"<<endl;
     
@@ -151,6 +181,26 @@ int MakeEvent(Pythia& pythia, PythiaEvent *eventStore, double nMaxEvt)
     int njpsi = 0;
     for (int i = 0; i < event.size(); i++) {
 
+
+        // Four-momenta of proton, electron, virtual photon/Z^0/W^+-.
+        Vec4 pProton = event[1].p();
+        Vec4 peIn    = event[2].p();
+        Vec4 pPhoton = event[4].p();
+
+        //Vec4 peIn    = event[4].p();
+        //Vec4 peOut   = event[6].p();
+        //Vec4 pPhoton = peIn - peOut;
+
+        // Q2, W2, Bjorken x, y.
+        double Q2    = - pPhoton.m2Calc();
+        double W2    = (pProton + pPhoton).m2Calc();
+        double x     = Q2 / (2. * pProton * pPhoton);
+        double y     = (pProton * pPhoton) / (pProton * peIn);
+
+
+        h_xQ2->Fill(x, Q2);
+        h_yQ2->Fill(y, Q2);
+        h_xy->Fill(x, y);
 
     	/*
             //

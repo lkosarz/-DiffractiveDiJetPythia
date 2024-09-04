@@ -1,0 +1,6 @@
+output/*.root
+data/*.root
+output/data/
+output/data/*.root
+output/output/
+
