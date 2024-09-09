@@ -43,8 +43,8 @@ Init:showAllSettings = on          ! print all flags/modes/parameters
 Beams:frameType = 2
 Beams:idA = 2212                   ! proton
 Beams:idB = 11                 ! e-
-Beams:eA = 18.                  ! RHIC nominal (GeV)
-Beams:eB = 275.                  ! RHIC nominal (GeV)
+Beams:eA = 275.                  ! RHIC nominal (GeV)
+Beams:eB = 18.                  ! RHIC nominal (GeV)
 
 #------------------------------------------------------------------------------
 # Process Selection

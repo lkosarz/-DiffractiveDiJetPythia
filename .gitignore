@@ -3,4 +3,5 @@ data/*.root
 output/data/
 output/data/*.root
 output/output/
-
+output/outputSpectra/
+output/outputSpectra/*.root
