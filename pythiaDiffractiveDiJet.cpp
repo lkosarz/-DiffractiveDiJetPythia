@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
     //  We need to deal with those settings ourself. Getting
     //  them through the runcard just avoids recompiling.
     //
-    int  maxNumberOfEvents = settings.mode("Main:numberOfEvents");
+    long  maxNumberOfEvents = settings.mode("Main:numberOfEvents");
     int  nList     = settings.mode("Main:numberToList");
 	//int  nList = 10;
     //int  nShow     = settings.mode("Main:timesToShow");
@@ -118,7 +118,7 @@ int main(int argc, char* argv[]) {
 
         MakeEvent(pythia, eventStore, ievent, WriteTree);  // in MakeEvent we deal with the whole event and return
 
-        eventTree->Fill();
+        if(WriteTree)	eventTree->Fill();
         ievent++;
 
         if (ievent%pace == 0) {

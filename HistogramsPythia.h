@@ -99,14 +99,14 @@ int CreateHistograms()
 
 	h_Event_nPart_final = new TH1D("h_Event_nPart_final", "Number of final MC particles; N_{MC} [1]; counts", 2001, -0.5, 2000.5);
 
-	h_Event_xQ2 = new TH2F("h_Event_xQ2", "Event Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]", 1000, 0.0, 1.0, 1000, 0.0, 10.0);
-	h_Event_yQ2 = new TH2F("h_Event_yQ2", "Event Q^{2} vs. inelasticity y; y [1]; Q^{2} [GeV^{2}/c^{2}]", 1000, 0.0, 1.0, 1000, 0.0, 10.0);
-	h_Event_xy = new TH2F("h_Event_xy", "Event inelasticity y vs. x; x [1]; y [1]", 1000, 0.0, 1.0, 1000, 0.0, 1.0);
+	h_Event_xQ2 = new TH2F("h_Event_xQ2", "Event Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]", 10000, 0.0, 1.0, 5000, 0.0, 50.0);
+	h_Event_yQ2 = new TH2F("h_Event_yQ2", "Event Q^{2} vs. inelasticity y; y [1]; Q^{2} [GeV^{2}/c^{2}]", 1000, 0.0, 1.0, 5000, 0.0, 50.0);
+	h_Event_xy = new TH2F("h_Event_xy", "Event inelasticity y vs. x; x [1]; y [1]", 10000, 0.0, 1.0, 1000, 0.0, 1.0);
 
 
-	h_Event_nHCal_xQ2 = new TH2F("h_Event_nHCal_xQ2", "Event with nHCal activity Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]", 1000, 0.0, 1.0, 1000, 0.0, 10.0);
-	h_Event_nHCal_yQ2 = new TH2F("h_Event_nHCal_yQ2", "Event with nHCal activity Q^{2} vs. inelasticity y; y [1]; Q^{2} [GeV^{2}/c^{2}]", 1000, 0.0, 1.0, 1000, 0.0, 10.0);
-	h_Event_nHCal_xy = new TH2F("h_Event_nHCal_xy", "Event with nHCal activity inelasticity y vs. x; x [1]; y [1]", 1000, 0.0, 1.0, 1000, 0.0, 1.0);
+	h_Event_nHCal_xQ2 = new TH2F("h_Event_nHCal_xQ2", "Event with nHCal activity Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]", 10000, 0.0, 1.0, 5000, 0.0, 50.0);
+	h_Event_nHCal_yQ2 = new TH2F("h_Event_nHCal_yQ2", "Event with nHCal activity Q^{2} vs. inelasticity y; y [1]; Q^{2} [GeV^{2}/c^{2}]", 1000, 0.0, 1.0, 5000, 0.0, 50.0);
+	h_Event_nHCal_xy = new TH2F("h_Event_nHCal_xy", "Event with nHCal activity inelasticity y vs. x; x [1]; y [1]", 10000, 0.0, 1.0, 1000, 0.0, 1.0);
 
 
 	h_Event_nPion_p = new TH1D("h_Event_nPion_p", "Number of MC particles #pi^{+}; N_{MC} [1]; counts", 2001, -0.5, 2000.5);
