@@ -26,7 +26,7 @@ public:
 
   // event
   long eventId;
-  int nParticles;
+  int nParticlesFinal;
   float Q2; // momentum transfer
   float x; // momentum fraction
   float y; // inelasticity

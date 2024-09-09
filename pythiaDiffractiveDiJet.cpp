@@ -17,7 +17,7 @@ using namespace Pythia8;
 
 double costhetastar(int, int, const Event&);
 bool isInAcceptance(int, const Event&);  // acceptance filter
-int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, double);            // event handler (analyze event and
+int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree = false);            // event handler (analyze event and
                                          // stores data in tuple)
 int findFinalElectron(const Event& event);
 
@@ -25,15 +25,16 @@ int findFinalElectron(const Event& event);
 int main(int argc, char* argv[]) {
     
     if (argc != 3) {
-        cout << "Usage: " << argv[0] << " runcard  rootfile" << endl;
+        cout << "Usage: " << argv[0] << " runcard  outfile" << endl;
         return 2;
     }
     char* runcard  = argv[1];
-    char* rootfile = argv[2];
+    char* outfile = argv[2];
     //const char* xmlDB    = "/users/PAS2524/lkosarz/Pythia/pythia8312/share/Pythia8/xmldoc";
     const char* xmlDB    = "/opt/local/share/Pythia8/xmldoc";
     
     bool WriteHepMC = false;
+    bool WriteTree = false;
 
 
     //
@@ -54,8 +55,8 @@ int main(int argc, char* argv[]) {
     cout << "Runcard '" << runcard << "' loaded." << endl;
     
 
-    TFile *treeFile  = new TFile(Form("%s_tree.root", rootfile),"RECREATE");
-    TFile *histFile  = new TFile(Form("%s_hist.root", rootfile),"RECREATE");
+    TFile *treeFile  = new TFile(Form("%s_tree.root", outfile),"RECREATE");
+    TFile *histFile  = new TFile(Form("%s_hist.root", outfile),"RECREATE");
 
     treeFile->cd();
 
@@ -92,8 +93,8 @@ int main(int argc, char* argv[]) {
     settings.listAll();
     
 
-    Pythia8ToHepMC toHepMC(Form("%s.hepmc3", rootfile));
-    //IO_GenEvent ascii_io(Form("%s.hepmc3", rootfile));
+    Pythia8ToHepMC toHepMC(Form("%s.hepmc3", outfile));
+    //IO_GenEvent ascii_io(Form("%s.hepmc3", outfile));
     //HepMC::WriterRootTree WriterRootfile("file.root")
     //GenEvent hepmcevt;
 
@@ -115,7 +116,7 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        MakeEvent(pythia, eventStore, maxNumberOfEvents);  // in myEvent we deal with the whole event and return
+        MakeEvent(pythia, eventStore, ievent, WriteTree);  // in MakeEvent we deal with the whole event and return
 
         eventTree->Fill();
         ievent++;
@@ -153,7 +154,7 @@ int main(int argc, char* argv[]) {
     histFile->Write();
 
     treeFile->cd();
-	eventTree->Write();
+	if(WriteTree) eventTree->Write();
     //treeFile->Write();
 
 	histFile->Close();
@@ -167,7 +168,7 @@ int main(int argc, char* argv[]) {
 //
 //  Event analysis
 //
-int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, double nMaxEvt)
+int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 {
     Event &event = pythia->event;
 
@@ -176,31 +177,102 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, double nMaxEvt)
 
 	//if (event[1].id() == 11)
 
-	int eleid = findFinalElectron(event);
+	//int eleid = findFinalElectron(event);
+
+	bool has_nHcalActivity = false;
+
+	int nPartFinal = 0;
+
+	int nPion_p = 0;
+	int nPion_n = 0;
+	int nKaon_p = 0;
+	int nKaon_n = 0;
+	int nProton_p = 0;
+	int nProton_n = 0;
+	int nElectron_p = 0;
+	int nElectron_n = 0;
+
+	int nNeutron = 0;
+	int nGamma = 0;
 
     int njpsi = 0;
     for (int i = 0; i < event.size(); i++) {
 
+    	Particle part = event[i];
 
-        // Four-momenta of proton, electron, virtual photon/Z^0/W^+-.
-        Vec4 pProton = event[1].p();
-        Vec4 peIn    = event[2].p();
-        Vec4 pPhoton = event[4].p();
+    	// accept final particles only
+    	if(!part.isFinal()) continue;
 
-        //Vec4 peIn    = event[4].p();
-        //Vec4 peOut   = event[6].p();
-        //Vec4 pPhoton = peIn - peOut;
+    	nPartFinal++;
 
-        // Q2, W2, Bjorken x, y.
-        double Q2    = - pPhoton.m2Calc();
-        double W2    = (pProton + pPhoton).m2Calc();
-        double x     = Q2 / (2. * pProton * pPhoton);
-        double y     = (pProton * pPhoton) / (pProton * peIn);
+		if(part.id() == 211) nPion_p++;
+		if(part.id() == -211) nPion_n++;
+		if(part.id() == 321) nKaon_p++;
+		if(part.id() == -321) nKaon_n++;
+		if(part.id() == 2212) nProton_p++;
+		if(part.id() == -2212) nProton_n++;
+		if(part.id() == -11) nElectron_p++;
+		if(part.id() == 11) nElectron_n++;
+
+		if(part.id() == 2112) nNeutron++;
+		if(part.id() == 22) nGamma++;
+
+		h_Particle_eta_p->Fill(part.eta(), part.pAbs());
+		h_Particle_eta_pT->Fill(part.eta(), part.pT());
+		h_Particle_eta_E->Fill(part.eta(), part.e());
 
 
-        h_xQ2->Fill(x, Q2);
-        h_yQ2->Fill(y, Q2);
-        h_xy->Fill(x, y);
+		// eta, momentum
+		if(part.id() == 211) h_Particle_pion_p_eta_p->Fill(part.eta(), part.pAbs());
+		if(part.id() == -211) h_Particle_pion_n_eta_p->Fill(part.eta(), part.pAbs());
+		if(part.id() == 321) h_Particle_Kaon_p_eta_p->Fill(part.eta(), part.pAbs());
+		if(part.id() == -321) h_Particle_Kaon_n_eta_p->Fill(part.eta(), part.pAbs());
+		if(part.id() == 2212) h_Particle_proton_p_eta_p->Fill(part.eta(), part.pAbs());
+		if(part.id() == -2212) h_Particle_proton_n_eta_p->Fill(part.eta(), part.pAbs());
+		if(part.id() == -11) h_Particle_Electron_p_eta_p->Fill(part.eta(), part.pAbs());
+		if(part.id() == 11) h_Particle_Electron_n_eta_p->Fill(part.eta(), part.pAbs());
+
+		if(part.id() == 2112) h_Particle_Neutron_eta_p->Fill(part.eta(), part.pAbs());
+		if(part.id() == 22) h_Particle_Gamma_eta_p->Fill(part.eta(), part.pAbs());
+
+		// eta, transverse momentum pT
+		if(part.id() == 211) h_Particle_pion_p_eta_pT->Fill(part.eta(), part.pT());
+		if(part.id() == -211) h_Particle_pion_n_eta_pT->Fill(part.eta(), part.pT());
+		if(part.id() == 321) h_Particle_Kaon_p_eta_pT->Fill(part.eta(), part.pT());
+		if(part.id() == -321) h_Particle_Kaon_n_eta_pT->Fill(part.eta(), part.pT());
+		if(part.id() == 2212) h_Particle_proton_p_eta_pT->Fill(part.eta(), part.pT());
+		if(part.id() == -2212) h_Particle_proton_n_eta_pT->Fill(part.eta(), part.pT());
+		if(part.id() == -11) h_Particle_Electron_p_eta_pT->Fill(part.eta(), part.pT());
+		if(part.id() == 11) h_Particle_Electron_n_eta_pT->Fill(part.eta(), part.pT());
+
+		if(part.id() == 2112) h_Particle_Neutron_eta_pT->Fill(part.eta(), part.pT());
+		if(part.id() == 22) h_Particle_Gamma_eta_pT->Fill(part.eta(), part.pT());
+
+		// eta, energy
+		if(part.id() == 211) h_Particle_Pion_p_eta_E->Fill(part.eta(), part.e());
+		if(part.id() == -211) h_Particle_Pion_n_eta_E->Fill(part.eta(), part.e());
+		if(part.id() == 321) h_Particle_Kaon_p_eta_E->Fill(part.eta(), part.e());
+		if(part.id() == -321) h_Particle_Kaon_n_eta_E->Fill(part.eta(), part.e());
+		if(part.id() == 2212) h_Particle_Proton_p_eta_E->Fill(part.eta(), part.e());
+		if(part.id() == -2212) h_Particle_Proton_n_eta_E->Fill(part.eta(), part.e());
+		if(part.id() == -11) h_Particle_Electron_p_eta_E->Fill(part.eta(), part.e());
+		if(part.id() == 11) h_Particle_Electron_n_eta_E->Fill(part.eta(), part.e());
+
+		if(part.id() == 2112) h_Particle_Neutron_eta_E->Fill(part.eta(), part.e());
+		if(part.id() == 22) h_Particle_Gamma_eta_E->Fill(part.eta(), part.e());
+
+
+		// Store particle
+		if(writeTree) eventStore->particles.push_back(part);
+
+
+		// select nHCal acceptance
+		//if(part.eta()<-4.03 ||  part.eta()>-1.27)	continue;
+		if(part.eta()<-4.14 ||  part.eta()>-1.18)	continue;
+
+		has_nHcalActivity = true;
+
+
 
     	/*
             //
@@ -224,7 +296,65 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, double nMaxEvt)
            // if (!(isInAcceptance(ielectron, event) && isInAcceptance(ipositron, event))) continue;
             
             
+    } // particles loop
+
+
+
+    // Four-momenta of proton, electron, virtual photon/Z^0/W^+-.
+    Vec4 pProton = event[1].p();
+    Vec4 peIn    = event[2].p();
+    Vec4 pPhoton = event[4].p();
+
+    //Vec4 peIn    = event[4].p();
+    //Vec4 peOut   = event[6].p();
+    //Vec4 pPhoton = peIn - peOut;
+
+    // Q2, W2, Bjorken x, y.
+    double Q2    = - pPhoton.m2Calc();
+    double W2    = (pProton + pPhoton).m2Calc();
+    double x     = Q2 / (2. * pProton * pPhoton);
+    double y     = (pProton * pPhoton) / (pProton * peIn);
+
+    h_Events->Fill(1);
+
+	// Store event
+    if(writeTree)
+    {
+    	eventStore->eventId = iev;
+    	eventStore->nParticlesFinal = nPartFinal;
+    	eventStore->Q2 = Q2;
+    	eventStore->x = x;
+    	eventStore->y = y;
     }
+
+
+    h_Event_xQ2->Fill(x, Q2);
+    h_Event_yQ2->Fill(y, Q2);
+    h_Event_xy->Fill(x, y);
+
+
+    if(has_nHcalActivity)
+    {
+        h_Event_nHCal_xQ2->Fill(x, Q2);
+        h_Event_nHCal_yQ2->Fill(y, Q2);
+        h_Event_nHCal_xy->Fill(x, y);
+    }
+
+    h_Event_nPart_final->Fill(nPartFinal);
+
+	h_Event_nPion_p->Fill(nPion_p);
+	h_Event_nPion_n->Fill(nPion_n);
+	h_Event_nKaon_p->Fill(nKaon_p);
+	h_Event_nKaon_n->Fill(nKaon_n);
+	h_Event_nProton_p->Fill(nProton_p);
+	h_Event_nProton_n->Fill(nProton_n);
+	h_Event_nElectron_p->Fill(nElectron_p);
+	h_Event_nElectron_n->Fill(nElectron_n);
+
+	h_Event_nNeutron->Fill(nNeutron);
+	h_Event_nGamma->Fill(nGamma);
+
+
     return 1;
 }
 
