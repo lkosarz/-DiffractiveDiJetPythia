@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --job-name=Pythia_ep
 #####SBATCH --mail.type=BEGIN,END,FAIL
-#SBATCH --output=output2/stdout/%j.out
-#SBATCH --error=output2/stderr/%j.err
+#SBATCH --output=output3/stdout/%j.out
+#SBATCH --error=output3/stderr/%j.err
 
 ####sbcast $HOME/eic/local/lib/jug_xl-nightly/ $TMPDIR/local/lib/jug_xl-nightly
 sbcast $HOME/eic/eic-shell $TMPDIR/eic-shell
@@ -32,9 +32,9 @@ ls $TMPDIR/local/*
 #./eic-shell -- ./runBatch.sh
 apptainer run $TMPDIR/local/lib/jug_xl-testing.sif -- ./runBatch.sh
 
-cp $TMPDIR/diffractiveDiJets_ep_18x275GeV_hist.root $SLURM_SUBMIT_DIR/output2/output/diffractiveDiJets_ep_18x275GeV_${SLURM_ARRAY_TASK_ID}_hist.root
-cp $TMPDIR/diffractiveDiJets_ep_18x275GeV_tree.root $SLURM_SUBMIT_DIR/output2/tree/diffractiveDiJets_ep_18x275GeV_${SLURM_ARRAY_TASK_ID}_tree.root
-cp $TMPDIR/diffractiveDiJets_ep_18x275GeV.hepmc3 $SLURM_SUBMIT_DIR/output2/hepmc/diffractiveDiJets_ep_18x275GeV_${SLURM_ARRAY_TASK_ID}.hepmc3
+cp $TMPDIR/diffractiveDiJets_ep_18x275GeV_hist.root $SLURM_SUBMIT_DIR/output3/output/diffractiveDiJets_ep_18x275GeV_${SLURM_ARRAY_TASK_ID}_hist.root
+cp $TMPDIR/diffractiveDiJets_ep_18x275GeV_tree.root $SLURM_SUBMIT_DIR/output3/tree/diffractiveDiJets_ep_18x275GeV_${SLURM_ARRAY_TASK_ID}_tree.root
+cp $TMPDIR/diffractiveDiJets_ep_18x275GeV.hepmc3 $SLURM_SUBMIT_DIR/output3/hepmc/diffractiveDiJets_ep_18x275GeV_${SLURM_ARRAY_TASK_ID}.hepmc3
 
 
 #sgather -k $TMPDIR/diffractiveDiJets_ep_18x275GeV_hist.root $SLURM_SUBMIT_DIR/output/output/diffractiveDiJets_ep_18x275GeV_${SLURM_ARRAY_TASK_ID}_hist.root

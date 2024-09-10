@@ -87,6 +87,9 @@ Int_t drawHist() {
 
 	list_Events->push_back("h_Event_nNeutron");
 	list_Events->push_back("h_Event_nGamma");
+
+	list_Events->push_back("h_Event_HCal_jets");
+
 /*
 	// MC particles
 	list_MCpart->push_back("h_MCpart_mass");

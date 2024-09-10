@@ -201,6 +201,20 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 	}
 
 
+
+	if(!name.CompareTo("h_Event_HCal_jets")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colzTEXT";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+
+
 /*
 	if(!name.CompareTo("NtracksBvsF")) {
 		TH2 *objH2 = dynamic_cast<TH2*>(obj);

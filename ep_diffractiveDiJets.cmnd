@@ -27,7 +27,7 @@
 # This is not part of the star_hf tune (just convenient)
 # Documentation: <pyhiadir>/htmldoc/MainProgramSettings.html
 #------------------------------------------------------------------------------
-Main:numberOfEvents = 200000       ! number of events to generate
+Main:numberOfEvents = 300000       ! number of events to generate
 Next:numberShowEvent = 20             ! show event record
 Next:numberCount = 0              ! number of events to print
 Next:numberShowInfo = 100             ! show how far along run is this many times

@@ -399,7 +399,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	// summary
 	bool anyHcal_jets = false;
 
-	int nHCal_jets = FillHCals(h_Event_eta_wE, hist_eta_energy_tmp, hist_eta_energy_denom_tmp, anyHcal_jets);
+	int nHCal_jets = FillHCals(h_Event_HCal_jets, hist_eta_energy_tmp, hist_eta_energy_denom_tmp, anyHcal_jets);
 
 
 	h_Event_Q2->Fill(Q2);
@@ -552,10 +552,15 @@ int FillHCals(TH2F *hist, TH1F *hEne, TH1F *hEneDenom, bool &anyHcal_jets)
 
 	hist->Fill(a, b);
 
-	if(a >= 0) a = 3;
-	if(b >= 0) b = 3;
+	if(b >= 0)
+	{
+		hist->Fill(a, 3);
+	}
+	if(a >= 0)
+	{
+		hist->Fill(3, b);
+	}
 
-	hist->Fill(a, b);
 
 	a = BinIdToCalo.at(sorted.at(0).first);
 	b = BinIdToCalo.at(sorted.at(1).first);

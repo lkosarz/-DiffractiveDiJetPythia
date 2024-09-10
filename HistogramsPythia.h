@@ -65,7 +65,7 @@ TH1F *h_Event_AllHCal_Q2;
 TH1F *h_Event_AllHCal_x;
 TH1F *h_Event_AllHCal_y;
 
-TH2F *h_Event_eta_wE;
+TH2F *h_Event_HCal_jets;
 
 // Particles
 
@@ -137,14 +137,14 @@ int CreateHistograms()
 
 	h_Event_nPart_final = new TH1F("h_Event_nPart_final", "Number of final MC particles; N_{MC} [1]; counts", 2001, -0.5, 2000.5);
 
-	h_Event_xQ2 = new TH2F("h_Event_xQ2", "Event Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 50000, 0.0, 1.0, 5000, 0.0, 50.0);
-	h_Event_yQ2 = new TH2F("h_Event_yQ2", "Event Q^{2} vs. inelasticity y; y [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 1.0, 5000, 0.0, 50.0);
-	h_Event_xy = new TH2F("h_Event_xy", "Event inelasticity y vs. x; x [1]; y [1]; counts", 50000, 0.0, 1.0, 1000, 0.0, 1.0);
+	h_Event_xQ2 = new TH2F("h_Event_xQ2", "Event Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 10000, 0.0, 0.02, 500, 0.0, 5.0);
+	h_Event_yQ2 = new TH2F("h_Event_yQ2", "Event Q^{2} vs. inelasticity y; y [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 1.0, 500, 0.0, 5.0);
+	h_Event_xy = new TH2F("h_Event_xy", "Event inelasticity y vs. x; x [1]; y [1]; counts", 10000, 0.0, 0.02, 1000, 0.0, 1.0);
 
 
-	h_Event_nHCal_xQ2 = new TH2F("h_Event_nHCal_xQ2", "Event with nHCal activity Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 50000, 0.0, 1.0, 5000, 0.0, 50.0);
-	h_Event_nHCal_yQ2 = new TH2F("h_Event_nHCal_yQ2", "Event with nHCal activity Q^{2} vs. inelasticity y; y [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 1.0, 5000, 0.0, 50.0);
-	h_Event_nHCal_xy = new TH2F("h_Event_nHCal_xy", "Event with nHCal activity inelasticity y vs. x; x [1]; y [1]; counts", 50000, 0.0, 1.0, 1000, 0.0, 1.0);
+	h_Event_nHCal_xQ2 = new TH2F("h_Event_nHCal_xQ2", "Event with nHCal activity Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 10000, 0.0, 0.02, 500, 0.0, 5.0);
+	h_Event_nHCal_yQ2 = new TH2F("h_Event_nHCal_yQ2", "Event with nHCal activity Q^{2} vs. inelasticity y; y [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 1.0, 500, 0.0, 5.0);
+	h_Event_nHCal_xy = new TH2F("h_Event_nHCal_xy", "Event with nHCal activity inelasticity y vs. x; x [1]; y [1]; counts", 10000, 0.0, 0.02, 1000, 0.0, 1.0);
 
 
 	h_Event_nPion_p = new TH1F("h_Event_nPion_p", "Number of MC particles #pi^{+}; N_{MC} [1]; counts", 2001, -0.5, 2000.5);
@@ -162,38 +162,38 @@ int CreateHistograms()
 
 	// special
 
-	h_Event_Q2 = new TH1F("h_Event_Q2", "Event Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 5000, 0.0, 50.0);
-	h_Event_x = new TH1F("h_Event_x", "Event x; x [1]; counts", 50000, 0.0, 1.0);
+	h_Event_Q2 = new TH1F("h_Event_Q2", "Event Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
+	h_Event_x = new TH1F("h_Event_x", "Event x; x [1]; counts", 10000, 0.0, 0.1);
 	h_Event_y = new TH1F("h_Event_y", "Event inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
-	h_Event_nHCal_0_Q2 = new TH1F("h_Event_nHCal_0_Q2", "Event with 0 jets in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 5000, 0.0, 50.0);
-	h_Event_nHCal_0_x = new TH1F("h_Event_nHCal_0_x", "Event with 0 jets in nHCal x; x [1]; counts", 50000, 0.0, 1.0);
+	h_Event_nHCal_0_Q2 = new TH1F("h_Event_nHCal_0_Q2", "Event with 0 jets in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
+	h_Event_nHCal_0_x = new TH1F("h_Event_nHCal_0_x", "Event with 0 jets in nHCal x; x [1]; counts", 10000, 0.0, 0.1);
 	h_Event_nHCal_0_y = new TH1F("h_Event_nHCal_0_y", "Event with 0 jets in nHCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
-	h_Event_nHCal_1_Q2 = new TH1F("h_Event_nHCal_1_Q2", "Event with 1 jet in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 5000, 0.0, 50.0);
-	h_Event_nHCal_1_x = new TH1F("h_Event_nHCal_1_x", "Event with 1 jet in nHCal x; x [1]; counts", 50000, 0.0, 1.0);
+	h_Event_nHCal_1_Q2 = new TH1F("h_Event_nHCal_1_Q2", "Event with 1 jet in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
+	h_Event_nHCal_1_x = new TH1F("h_Event_nHCal_1_x", "Event with 1 jet in nHCal x; x [1]; counts", 10000, 0.0, 0.1);
 	h_Event_nHCal_1_y = new TH1F("h_Event_nHCal_1_y", "Event with 1 jet in nHCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
-	h_Event_nHCal_2_Q2 = new TH1F("h_Event_nHCal_2_Q2", "Event with 2 jets in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 5000, 0.0, 50.0);
-	h_Event_nHCal_2_x = new TH1F("h_Event_nHCal_2_x", "Event with 2 jets in nHCal x; x [1]; counts", 50000, 0.0, 1.0);
+	h_Event_nHCal_2_Q2 = new TH1F("h_Event_nHCal_2_Q2", "Event with 2 jets in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
+	h_Event_nHCal_2_x = new TH1F("h_Event_nHCal_2_x", "Event with 2 jets in nHCal x; x [1]; counts", 10000, 0.0, 0.1);
 	h_Event_nHCal_2_y = new TH1F("h_Event_nHCal_2_y", "Event with 2 jets in nHCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
-	h_Event_AllHCal_Q2 = new TH1F("h_Event_AllHCal_Q2", "Event with jets in any HCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 5000, 0.0, 50.0);
-	h_Event_AllHCal_x = new TH1F("h_Event_AllHCal_x", "Event with jets in any HCal x; x [1]; counts", 50000, 0.0, 1.0);
+	h_Event_AllHCal_Q2 = new TH1F("h_Event_AllHCal_Q2", "Event with jets in any HCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
+	h_Event_AllHCal_x = new TH1F("h_Event_AllHCal_x", "Event with jets in any HCal x; x [1]; counts", 10000, 0.0, 0.1);
 	h_Event_AllHCal_y = new TH1F("h_Event_AllHCal_y", "Event with jets in any HCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
 
-	h_Event_eta_wE = new TH2F("h_Event_eta_wE", "Event with dijets in HCals; Jet #1; Jet #2; counts", 4, 0.0, 4.0, 4, 0.0, 4.0);
+	h_Event_HCal_jets = new TH2F("h_Event_HCal_jets", "Event with dijets in HCals; Jet #1; Jet #2; counts", 4, 0.0, 4.0, 4, 0.0, 4.0);
 
-	h_Event_eta_wE->GetXaxis()->SetBinLabel(1, "nHCal");
-	h_Event_eta_wE->GetXaxis()->SetBinLabel(2, "Barrel HCal");
-	h_Event_eta_wE->GetXaxis()->SetBinLabel(3, "LFHCAL");
-	h_Event_eta_wE->GetXaxis()->SetBinLabel(4, "Any");
+	h_Event_HCal_jets->GetXaxis()->SetBinLabel(1, "nHCal");
+	h_Event_HCal_jets->GetXaxis()->SetBinLabel(2, "Barrel HCal");
+	h_Event_HCal_jets->GetXaxis()->SetBinLabel(3, "LFHCAL");
+	h_Event_HCal_jets->GetXaxis()->SetBinLabel(4, "Any");
 
-	h_Event_eta_wE->GetYaxis()->SetBinLabel(1, "nHCal");
-	h_Event_eta_wE->GetYaxis()->SetBinLabel(2, "Barrel HCal");
-	h_Event_eta_wE->GetYaxis()->SetBinLabel(3, "LFHCAL");
-	h_Event_eta_wE->GetYaxis()->SetBinLabel(4, "Any");
+	h_Event_HCal_jets->GetYaxis()->SetBinLabel(1, "nHCal");
+	h_Event_HCal_jets->GetYaxis()->SetBinLabel(2, "Barrel HCal");
+	h_Event_HCal_jets->GetYaxis()->SetBinLabel(3, "LFHCAL");
+	h_Event_HCal_jets->GetYaxis()->SetBinLabel(4, "Any");
 
 	// Particles
 	h_Particle_eta = new TH1F("h_Particle_eta", "MC particle #eta; #eta; counts", 200, -10.0, 10.0);
