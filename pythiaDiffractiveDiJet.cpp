@@ -406,14 +406,14 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	h_Event_x->Fill(x);
 	h_Event_y->Fill(y);
 
-	if(nHCal_jets == 0)
+	if(nHCal_jets == 0 && anyHcal_jets)
 	{
 		h_Event_nHCal_0_Q2->Fill(Q2);
 		h_Event_nHCal_0_x->Fill(x);
 		h_Event_nHCal_0_y->Fill(y);
 	}
 
-	if(nHCal_jets == 1)
+	if(nHCal_jets == 1 && anyHcal_jets)
 	{
 		h_Event_nHCal_1_Q2->Fill(Q2);
 		h_Event_nHCal_1_x->Fill(x);
@@ -421,7 +421,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	}
 
 
-	if(nHCal_jets == 2)
+	if(nHCal_jets == 2 && anyHcal_jets)
 	{
 		h_Event_nHCal_2_Q2->Fill(Q2);
 		h_Event_nHCal_2_x->Fill(x);
@@ -560,7 +560,10 @@ int FillHCals(TH2F *hist, TH1F *hEne, TH1F *hEneDenom, bool &anyHcal_jets)
 	{
 		hist->Fill(3, b);
 	}
-
+	if(a >= 0 && b >= 0)
+	{
+		hist->Fill(3, 3);
+	}
 
 	a = BinIdToCalo.at(sorted.at(0).first);
 	b = BinIdToCalo.at(sorted.at(1).first);

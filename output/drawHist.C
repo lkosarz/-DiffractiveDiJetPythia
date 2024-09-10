@@ -60,6 +60,7 @@ Int_t drawHist() {
 
 
 	vector<TString> *list_Events = new vector<TString>;
+	vector<TString> *list_Events_special = new vector<TString>;
 	vector<TString> *list_Particle = new vector<TString>;
 
 
@@ -89,6 +90,30 @@ Int_t drawHist() {
 	list_Events->push_back("h_Event_nGamma");
 
 	list_Events->push_back("h_Event_HCal_jets");
+
+	list_Events->push_back("h_Particle_eta_wE");
+
+
+	list_Events_special->push_back("h_Event_Q2");
+	list_Events_special->push_back("h_Event_x");
+	list_Events_special->push_back("h_Event_y");
+
+	list_Events_special->push_back("h_Event_nHCal_0_Q2");
+	list_Events_special->push_back("h_Event_nHCal_0_x");
+	list_Events_special->push_back("h_Event_nHCal_0_y");
+
+	list_Events_special->push_back("h_Event_nHCal_1_Q2");
+	list_Events_special->push_back("h_Event_nHCal_1_x");
+	list_Events_special->push_back("h_Event_nHCal_1_y");
+
+	list_Events_special->push_back("h_Event_nHCal_2_Q2");
+	list_Events_special->push_back("h_Event_nHCal_2_x");
+	list_Events_special->push_back("h_Event_nHCal_2_y");
+
+	list_Events_special->push_back("h_Event_AllHCal_Q2");
+	list_Events_special->push_back("h_Event_AllHCal_x");
+	list_Events_special->push_back("h_Event_AllHCal_y");
+
 
 /*
 	// MC particles
@@ -156,7 +181,9 @@ Int_t drawHist() {
 	//delete cnv;
 	//file->Close();
 
-	drawAny("output/Events/", "data/diffractiveDiJets_ep_18x275GeV_full.root", list_Events);
+	drawAny("output/Events/", "data/tmpf_diffractiveDiJets_ep_18x275GeV_1_0.root", list_Events);
+	gSystem->cd("../");
+	drawAny("output/Events/", "data/tmpf_diffractiveDiJets_ep_18x275GeV_1_0.root", list_Events_special);
 	gSystem->cd("../");
 	//drawAny("output/MCpart/", "data/diffractiveDiJets_ep_18x275GeV_full.root", list_Particle);
 	//gSystem->cd("../");
