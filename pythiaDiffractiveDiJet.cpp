@@ -6,6 +6,10 @@
 #include "TTree.h"
 #include "TFile.h"
 
+#include <vector>
+#include <utility>
+#include <map>
+
 #include "Pythia8Plugins/HepMC3.h"
 
 #include "PythiaEvent.h"
@@ -21,6 +25,12 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree =
                                          // stores data in tuple)
 int findFinalElectron(const Event& event);
 
+int FillHCals(TH2F *hist, TH1F *hEne, TH1F *hEneDenom, bool &anyHcal_jets);
+
+void SortPairs(std::vector<pair<int, double>> &input, std::vector<pair<int, double>> &output);
+
+bool compFunc(pair<int, double> a, pair<int, double> b);
+void PrintVec(std::vector<pair<int, double>> input);
 
 int main(int argc, char* argv[]) {
     
@@ -174,10 +184,15 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
 	cout<<"NEW EVENT ---------------------------"<<endl;
     
+	hist_eta_energy_tmp->Reset();
+	hist_eta_energy_denom_tmp->Reset();
 
 	//if (event[1].id() == 11)
 
 	//int eleid = findFinalElectron(event);
+
+	float EsumF = 0.0;
+	double EsumD = 0.0;
 
 	bool has_nHcalActivity = false;
 
@@ -216,6 +231,9 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
 		if(part.id() == 2112) nNeutron++;
 		if(part.id() == 22) nGamma++;
+
+		h_Particle_eta->Fill(part.eta());
+		h_Particle_eta_wE->Fill(part.eta(), part.e());
 
 		h_Particle_eta_p->Fill(part.eta(), part.pAbs());
 		h_Particle_eta_pT->Fill(part.eta(), part.pT());
@@ -260,6 +278,29 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
 		if(part.id() == 2112) h_Particle_Neutron_eta_E->Fill(part.eta(), part.e());
 		if(part.id() == 22) h_Particle_Gamma_eta_E->Fill(part.eta(), part.e());
+
+
+		if(11>part.status() || part.status()>19)
+		{
+			hist_eta_energy_tmp->Fill(part.eta(), part.e());
+
+			//cout<<"part E ="<<part.e()<<endl;
+
+			EsumF += part.e();
+			EsumD += part.e();
+
+			//cout<<"EsumF ="<<EsumF<<endl;
+			//cout<<"EsumD ="<<EsumD<<endl;
+
+			for (int i = 1; i <= hist_eta_energy_denom_tmp->GetNbinsX(); ++i) {
+
+				double xbin_cent = hist_eta_energy_denom_tmp->GetXaxis()->GetBinCenter(i);
+
+				hist_eta_energy_denom_tmp->Fill(xbin_cent, part.e());
+
+			}
+
+		}
 
 
 		// Store particle
@@ -355,6 +396,46 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	h_Event_nGamma->Fill(nGamma);
 
 
+	// summary
+	bool anyHcal_jets = false;
+
+	int nHCal_jets = FillHCals(h_Event_eta_wE, hist_eta_energy_tmp, hist_eta_energy_denom_tmp, anyHcal_jets);
+
+
+	h_Event_Q2->Fill(Q2);
+	h_Event_x->Fill(x);
+	h_Event_y->Fill(y);
+
+	if(nHCal_jets == 0)
+	{
+		h_Event_nHCal_0_Q2->Fill(Q2);
+		h_Event_nHCal_0_x->Fill(x);
+		h_Event_nHCal_0_y->Fill(y);
+	}
+
+	if(nHCal_jets == 1)
+	{
+		h_Event_nHCal_1_Q2->Fill(Q2);
+		h_Event_nHCal_1_x->Fill(x);
+		h_Event_nHCal_1_y->Fill(y);
+	}
+
+
+	if(nHCal_jets == 2)
+	{
+		h_Event_nHCal_2_Q2->Fill(Q2);
+		h_Event_nHCal_2_x->Fill(x);
+		h_Event_nHCal_2_y->Fill(y);
+	}
+
+	if(anyHcal_jets == true) // Both jets in any HCal
+	{
+		h_Event_AllHCal_Q2->Fill(Q2);
+		h_Event_AllHCal_x->Fill(x);
+		h_Event_AllHCal_y->Fill(y);
+	}
+
+
     return 1;
 }
 
@@ -425,3 +506,141 @@ int findFinalElectron(const Event& event)
 	return eleid;
 }
 
+
+int FillHCals(TH2F *hist, TH1F *hEne, TH1F *hEneDenom, bool &anyHcal_jets)
+{
+
+	TH1F *hEne_Norm = (TH1F *)hEne->Clone("hEne_Norm");
+
+
+	float integral = hEne->Integral();
+
+	//cout<<"integral = "<<integral<<endl;
+	//cout<<"Esum = "<<hEneDenom->GetBinContent(1)<<endl;
+
+	hEne_Norm->Divide(hEneDenom);
+
+	std::map<int, int> BinIdToCalo = { {1,-1}, {2,0}, {3,-1}, {4,1}, {5,-1}, {6,2}, {7,-1} };
+
+
+	std::vector<pair<int, double>> input;
+	std::vector<pair<int, double>> sorted;
+
+	for (int i = 1; i <= hEne_Norm->GetNbinsX(); ++i) {
+
+		pair<int, double> binPair;
+
+		binPair.first = i;
+		binPair.second = hEne_Norm->GetBinContent(i);
+
+		input.push_back(binPair);
+	}
+
+	SortPairs(input, sorted);
+
+	if(sorted.at(0).second > 2.0*sorted.at(1).second)
+	{
+		sorted.at(1) = sorted.at(0);
+	}
+
+
+	//cout<<"Final:"<<endl;
+	//PrintVec(sorted);
+
+	int a = BinIdToCalo.at(sorted.at(0).first);
+	int b = BinIdToCalo.at(sorted.at(1).first);
+
+	hist->Fill(a, b);
+
+	if(a >= 0) a = 3;
+	if(b >= 0) b = 3;
+
+	hist->Fill(a, b);
+
+	a = BinIdToCalo.at(sorted.at(0).first);
+	b = BinIdToCalo.at(sorted.at(1).first);
+
+	//cout<<"a ="<<a<<endl;
+	//cout<<"b ="<<b<<endl;
+
+	if(a >= 0 && b >= 0 )
+	{
+		anyHcal_jets = true;
+		//cout<<"Both jets in any HCal"<<endl;
+	}
+
+	if(a == 0 && b == 0) return 2; // 2 jets in nHCal
+	if(a == 0 || b == 0) return 1; // 1 jet in nHCal
+	if(a != 0 && b != 0) return 0; // 0 jet in nHCal
+	//if(a == 3 && b == 3) return 3; // jets in any HCal
+
+	return -1;
+
+}
+
+
+void SortPairs(std::vector<pair<int, double>> &input, std::vector<pair<int, double>> &output)
+{
+
+	//int maxId = 0;
+	//int maxVal = 0.0;
+
+	std::vector<pair<int, double>> input_copy = input;
+
+	//PrintVec(input_copy);
+
+	sort(input_copy.rbegin(), input_copy.rend(), compFunc);
+
+	//cout<<"Sorted:"<<endl;
+	//PrintVec(input_copy);
+
+	output = input_copy;
+
+/*
+	for (int i = 0; i < input_copy.size(); ++i) {
+
+		for (int j = 0; j < input_copy.size(); ++j) {
+
+			double currVal = input_copy.at(j).second;
+
+			if(currVal > maxVal)
+			{
+				maxId = j+1;
+				maxVal = currVal;
+			}
+		} // j
+
+		pair<int, double> newPair;
+		newPair.first = maxId;
+		newPair.second = maxVal;
+
+
+		output.push_back(newPair);
+		input_copy.erase(maxId-1);
+
+	} // i
+*/
+}
+
+
+
+bool compFunc(pair<int, double> a, pair<int, double> b)
+{
+	return (a.second < b.second);
+}
+
+
+void PrintVec(std::vector<pair<int, double>> input)
+{
+
+	for (int i = 0; i < input.size(); ++i) {
+
+		int a = input.at(i).first;
+		float b = input.at(i).second;
+
+		cout<<i<<": <"<<a<<","<<b<<">\t";
+
+	}
+	cout<<endl;
+
+}
