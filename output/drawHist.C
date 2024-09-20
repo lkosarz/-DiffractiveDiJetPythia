@@ -62,12 +62,14 @@ Int_t drawHist() {
 	vector<TString> *list_Events = new vector<TString>;
 	vector<TString> *list_Events_special = new vector<TString>;
 	vector<TString> *list_Particle = new vector<TString>;
+	vector<TString> *list_Jets = new vector<TString>;
 
 
 	// Event
 	list_Events->push_back("h_Events");
 
 	list_Events->push_back("h_Event_nPart_final");
+	list_Events->push_back("h_Event_nJets");
 
 	list_Events->push_back("h_Event_xQ2");
 	list_Events->push_back("h_Event_yQ2");
@@ -164,6 +166,15 @@ Int_t drawHist() {
 	list_Particle->push_back("h_Particle_Gamma_eta_E");
 
 
+	// Jets
+	list_Jets->push_back("h_Jet_nPart");
+	list_Jets->push_back("h_Jet_mass");
+	list_Jets->push_back("h_Jet_charge");
+	list_Jets->push_back("h_Jet_E");
+	list_Jets->push_back("h_Jet_p");
+	list_Jets->push_back("h_Jet_pT");
+	list_Jets->push_back("h_Jet_eta");
+
 
 	//TCanvas *cnv = new TCanvas();
 	//cnv->cd();
@@ -176,17 +187,20 @@ Int_t drawHist() {
 	//gSystem->cd("../");
 
 	gSystem->mkdir("output/Events/");
-	gSystem->mkdir("output/MCpart/");
+	gSystem->mkdir("output/Particles/");
+	gSystem->mkdir("output/Jets/");
 
 	//delete cnv;
 	//file->Close();
 
-	drawAny("output/Events/", "data/tmpf_diffractiveDiJets_ep_18x275GeV_1_0.root", list_Events);
+	drawAny("output/Events/", "data/diffractiveDiJets_ep_18x275GeV_full.root", list_Events);
 	gSystem->cd("../");
-	drawAny("output/Events/", "data/tmpf_diffractiveDiJets_ep_18x275GeV_1_0.root", list_Events_special);
+	drawAny("output/Events/", "data/diffractiveDiJets_ep_18x275GeV_full.root", list_Events_special);
 	gSystem->cd("../");
-	//drawAny("output/MCpart/", "data/diffractiveDiJets_ep_18x275GeV_full.root", list_Particle);
-	//gSystem->cd("../");
+	drawAny("output/Particles/", "data/diffractiveDiJets_ep_18x275GeV_full.root", list_Particle);
+	gSystem->cd("../");
+	drawAny("output/Jets/", "data/diffractiveDiJets_ep_18x275GeV_full.root", list_Jets);
+	gSystem->cd("../");
 
 
 	return 1.0;

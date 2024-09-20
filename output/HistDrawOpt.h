@@ -38,6 +38,15 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 		//logScale=kTRUE;
 	}
 
+	if(!name.CompareTo("h_Event_nJets")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		//logScale=kTRUE;
+	}
+
 
 	if(!name.CompareTo("h_Event_xQ2")) {
 		TH2 *objH2 = dynamic_cast<TH2*>(obj);
@@ -347,6 +356,64 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 		logScaleX=kTRUE;
 	}
 	if(!name.CompareTo("h_Event_AllHCal_y")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+
+
+	if(!name.CompareTo("h_Jet_nPart")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_mass")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_charge")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_E")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_p")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_pT")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_eta")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
 		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);

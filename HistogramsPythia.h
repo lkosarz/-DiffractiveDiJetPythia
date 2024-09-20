@@ -15,12 +15,26 @@
 int CreateHistograms();
 
 
+void MakeLogBins(double *array, int nbins, double binLo, double binHi)
+{
+	//double exp = (nbinEdg-1)/nBinPerDecimal;
+
+    // Calculate the logarithmic bin edges
+    double logMin = log10(binLo);
+    double logMax = log10(binHi);
+    double binWidth = (logMax - logMin) / nbins;
+
+    for (int i = 0; i <= nbins; ++i) {
+    	array[i] = pow(10, logMin + i * binWidth);
+    }
+}
 
 // Event
 
 TH1F *h_Events;
 
 TH1F *h_Event_nPart_final;
+TH1F *h_Event_nJets;
 
 TH2F *h_Event_xQ2;
 TH2F *h_Event_yQ2;
@@ -119,6 +133,15 @@ TH2F *h_Particle_Neutron_eta_E;
 TH2F *h_Particle_Gamma_eta_E;
 
 
+// Jets
+TH1D *h_Jet_nPart;
+TH1D *h_Jet_mass;
+TH1D *h_Jet_charge;
+TH1D *h_Jet_E;
+TH1D *h_Jet_p;
+TH1D *h_Jet_pT;
+TH1D *h_Jet_eta;
+
 
 // temp
 
@@ -131,20 +154,30 @@ int CreateHistograms()
 {
 
 
+	const int nbins_x = 200;
+
+	const int nbinEdg_x = nbins_x+1;
+
+	double *logBinsArray_x = new double[nbins_x];
+
+	MakeLogBins(logBinsArray_x, nbins_x, 10e-7, 1.0);
+
+
 	// Event
 
 	h_Events = new TH1F("h_Events", "Number of events; events; counts", 10, 0.0, 10.0);
 
 	h_Event_nPart_final = new TH1F("h_Event_nPart_final", "Number of final MC particles; N_{MC} [1]; counts", 2001, -0.5, 2000.5);
+	h_Event_nJets = new TH1F("h_Event_nJets", "Number of jets; N_{jet} [1]; counts", 21, -0.5, 20.5);
 
-	h_Event_xQ2 = new TH2F("h_Event_xQ2", "Event Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 10000, 0.0, 0.02, 500, 0.0, 5.0);
+	h_Event_xQ2 = new TH2F("h_Event_xQ2", "Event Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]; counts", nbins_x, logBinsArray_x, 500, 0.0, 5.0);
 	h_Event_yQ2 = new TH2F("h_Event_yQ2", "Event Q^{2} vs. inelasticity y; y [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 1.0, 500, 0.0, 5.0);
-	h_Event_xy = new TH2F("h_Event_xy", "Event inelasticity y vs. x; x [1]; y [1]; counts", 10000, 0.0, 0.02, 1000, 0.0, 1.0);
+	h_Event_xy = new TH2F("h_Event_xy", "Event inelasticity y vs. x; x [1]; y [1]; counts", nbins_x, logBinsArray_x, 1000, 0.0, 1.0);
 
 
-	h_Event_nHCal_xQ2 = new TH2F("h_Event_nHCal_xQ2", "Event with nHCal activity Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 10000, 0.0, 0.02, 500, 0.0, 5.0);
+	h_Event_nHCal_xQ2 = new TH2F("h_Event_nHCal_xQ2", "Event with nHCal activity Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]; counts", nbins_x, logBinsArray_x, 500, 0.0, 5.0);
 	h_Event_nHCal_yQ2 = new TH2F("h_Event_nHCal_yQ2", "Event with nHCal activity Q^{2} vs. inelasticity y; y [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 1.0, 500, 0.0, 5.0);
-	h_Event_nHCal_xy = new TH2F("h_Event_nHCal_xy", "Event with nHCal activity inelasticity y vs. x; x [1]; y [1]; counts", 10000, 0.0, 0.02, 1000, 0.0, 1.0);
+	h_Event_nHCal_xy = new TH2F("h_Event_nHCal_xy", "Event with nHCal activity inelasticity y vs. x; x [1]; y [1]; counts", nbins_x, logBinsArray_x, 1000, 0.0, 1.0);
 
 
 	h_Event_nPion_p = new TH1F("h_Event_nPion_p", "Number of MC particles #pi^{+}; N_{MC} [1]; counts", 2001, -0.5, 2000.5);
@@ -163,23 +196,23 @@ int CreateHistograms()
 	// special
 
 	h_Event_Q2 = new TH1F("h_Event_Q2", "Event Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
-	h_Event_x = new TH1F("h_Event_x", "Event x; x [1]; counts", 10000, 0.0, 0.1);
+	h_Event_x = new TH1F("h_Event_x", "Event x; x [1]; counts", nbins_x, logBinsArray_x);
 	h_Event_y = new TH1F("h_Event_y", "Event inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
 	h_Event_nHCal_0_Q2 = new TH1F("h_Event_nHCal_0_Q2", "Event with 0 jets in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
-	h_Event_nHCal_0_x = new TH1F("h_Event_nHCal_0_x", "Event with 0 jets in nHCal x; x [1]; counts", 10000, 0.0, 0.1);
+	h_Event_nHCal_0_x = new TH1F("h_Event_nHCal_0_x", "Event with 0 jets in nHCal x; x [1]; counts", nbins_x, logBinsArray_x);
 	h_Event_nHCal_0_y = new TH1F("h_Event_nHCal_0_y", "Event with 0 jets in nHCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
 	h_Event_nHCal_1_Q2 = new TH1F("h_Event_nHCal_1_Q2", "Event with 1 jet in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
-	h_Event_nHCal_1_x = new TH1F("h_Event_nHCal_1_x", "Event with 1 jet in nHCal x; x [1]; counts", 10000, 0.0, 0.1);
+	h_Event_nHCal_1_x = new TH1F("h_Event_nHCal_1_x", "Event with 1 jet in nHCal x; x [1]; counts", nbins_x, logBinsArray_x);
 	h_Event_nHCal_1_y = new TH1F("h_Event_nHCal_1_y", "Event with 1 jet in nHCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
 	h_Event_nHCal_2_Q2 = new TH1F("h_Event_nHCal_2_Q2", "Event with 2 jets in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
-	h_Event_nHCal_2_x = new TH1F("h_Event_nHCal_2_x", "Event with 2 jets in nHCal x; x [1]; counts", 10000, 0.0, 0.1);
+	h_Event_nHCal_2_x = new TH1F("h_Event_nHCal_2_x", "Event with 2 jets in nHCal x; x [1]; counts", nbins_x, logBinsArray_x);
 	h_Event_nHCal_2_y = new TH1F("h_Event_nHCal_2_y", "Event with 2 jets in nHCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
 	h_Event_AllHCal_Q2 = new TH1F("h_Event_AllHCal_Q2", "Event with jets in any HCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
-	h_Event_AllHCal_x = new TH1F("h_Event_AllHCal_x", "Event with jets in any HCal x; x [1]; counts", 10000, 0.0, 0.1);
+	h_Event_AllHCal_x = new TH1F("h_Event_AllHCal_x", "Event with jets in any HCal x; x [1]; counts", nbins_x, logBinsArray_x);
 	h_Event_AllHCal_y = new TH1F("h_Event_AllHCal_y", "Event with jets in any HCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
 
@@ -244,6 +277,16 @@ int CreateHistograms()
 
 	h_Particle_Neutron_eta_E = new TH2F("h_Particle_Neutron_eta_E", "MC particles n #eta vs. energy; #eta [1]; E_{MC} [GeV]; counts", 200, -10.0, 10.0, 500, 0.0, 50.0);
 	h_Particle_Gamma_eta_E = new TH2F("h_Particle_Gamma_eta_E", "MC particles #gamma #eta vs. energy; #eta [1]; E_{MC} [GeV]; counts", 200, -10.0, 10.0, 500, 0.0, 50.0);
+
+	// Jets
+	h_Jet_nPart = new TH1D("h_Jet_nPart", "Jet number of particles; N_{part} [1]; counts", 201, -0.5, 200.5);
+	h_Jet_mass = new TH1D("h_Jet_mass", "Jet mass; m [GeV/c^{2}]; counts", 2000, 0.0, 20.0);
+    h_Jet_charge = new TH1D("h_Jet_charge", "Jet charge; q [1]; counts", 101, -50.5, 50.5);
+	h_Jet_E = new TH1D("h_Jet_E", "Jet energy; E [GeV]; counts", 500, 0.0, 50.0);
+	h_Jet_p = new TH1D("h_Jet_p", "Jet momentum; p [GeV/c]; counts", 500, 0.0, 50.0);
+	h_Jet_pT = new TH1D("h_Jet_pT", "Jet transverse momentum; p_{T} [GeV/c]; counts", 500, 0.0, 50.0);
+	h_Jet_eta = new TH1D("h_Jet_eta", "Jet #eta; #eta [1]; counts", 200, -5.0, 5.0);
+
 
 	// temp
 	const int nEtaBins = 7;

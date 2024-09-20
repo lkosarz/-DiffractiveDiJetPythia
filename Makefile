@@ -19,20 +19,23 @@ PROGRAM  =  pythiaDiffractiveDiJet
 PYTHIAPATH   = /opt/local
 LHAPDFPATH   = /users/PAS2524/lkosarz/LHAPDF/LHAPDF-6.5.4
 
+FASTJETCXX = `fastjet-config --cxxflags`
+FASTJETLIB = `fastjet-config --libs --plugins`
+
 DICTHEADERS = PythiaEvent.h LinkDef.h
 
 ROOTINC = `root-config --incdir`
 ROOTLIB = `root-config --libdir`
 
 CXX      =  gcc
-CXXFLAGS = -O  -W -Wall -m64 -std=c++20
+CXXFLAGS = -O  -W -Wall -m64 -std=c++20 $(FASTJETCXX)
 CPPFLAGS = -I$(PYTHIAPATH)/include -I$(ROOTSYS)/include -I$(ROOTINC)
 LDFLAGS  = -L$(PYTHIAPATH)/lib -L$(ROOTSYS)/lib -L$(ROOTLIB) -L$(LHAPDFPATH) -lpythia8 -lHepMC3 -lstdc++ -lCore -lThread -lRIO -lNet -lHist -lMathCore -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lfreetype -lpthread -lm -ldl
 
 #LDFLAGS  = -L$(PYTHIAPATH)/lib/archive -L$(ROOTSYS)/lib -L$(LHAPDFPATH) -lLHAPDF -lpythia8 -llhapdfdummy -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lfreetype -lpthread -lm -ldl
 
 $(PROGRAM):	$(PROGRAM).cpp DictOutput.cxx libPythiaEvent.so
-		$(CXX) $(CXXFLAGS) $(PROGRAM).cpp $(CPPFLAGS) DictOutput.cxx $(LDFLAGS) libPythiaEvent.so -o $(PROGRAM)
+		$(CXX) $(CXXFLAGS) $(PROGRAM).cpp $(CPPFLAGS) DictOutput.cxx $(LDFLAGS) $(FASTJETLIB) libPythiaEvent.so -o $(PROGRAM)
 		
 DictOutput.cxx : PythiaEvent.h
 	rootcint -f $@ -c $(DICTHEADERS)

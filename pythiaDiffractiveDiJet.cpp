@@ -10,6 +10,9 @@
 #include <utility>
 #include <map>
 
+#include "fastjet/ClusterSequence.hh"
+#include <iostream>
+
 #include "Pythia8Plugins/HepMC3.h"
 
 #include "PythiaEvent.h"
@@ -17,7 +20,9 @@
 
 #define PR(x) std::cout << #x << " = " << (x) << std::endl;
 
+using namespace fastjet;
 using namespace Pythia8; 
+using namespace std;
 
 double costhetastar(int, int, const Event&);
 bool isInAcceptance(int, const Event&);  // acceptance filter
@@ -26,6 +31,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree =
 int findFinalElectron(const Event& event);
 
 int FillHCals(TH2F *hist, TH1F *hEne, TH1F *hEneDenom, bool &anyHcal_jets);
+int FillHCalsJets(TH2F *hist, vector<fastjet::PseudoJet> jets);
 
 void SortPairs(std::vector<pair<int, double>> &input, std::vector<pair<int, double>> &output);
 
@@ -182,14 +188,22 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 {
     Event &event = pythia->event;
 
-	cout<<"NEW EVENT ---------------------------"<<endl;
+	//cout<<"NEW EVENT ---------------------------"<<endl;
+
+	std::cout<<"simulating event "<<iev<<std::endl;
     
 	hist_eta_energy_tmp->Reset();
 	hist_eta_energy_denom_tmp->Reset();
 
 	//if (event[1].id() == 11)
-
 	//int eleid = findFinalElectron(event);
+
+	// create a jet definition:
+	// a jet algorithm with a given radius parameter
+	//----------------------------------------------------------
+	double R = 1.0;
+	fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, R);
+	vector<fastjet::PseudoJet> input_particles;
 
 	float EsumF = 0.0;
 	double EsumD = 0.0;
@@ -280,7 +294,12 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		if(part.id() == 22) h_Particle_Gamma_eta_E->Fill(part.eta(), part.e());
 
 
-		if(11>part.status() || part.status()>19)
+		// read in input particles
+		//----------------------------------------------------------
+		input_particles.push_back(fastjet::PseudoJet(part.px(),part.py(),part.pz(),part.e()));
+
+
+		if(11>part.status() || part.status()>19) // exclude beam particles
 		{
 			hist_eta_energy_tmp->Fill(part.eta(), part.e());
 
@@ -299,7 +318,6 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 				hist_eta_energy_denom_tmp->Fill(xbin_cent, part.e());
 
 			}
-
 		}
 
 
@@ -339,6 +357,16 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
             
     } // particles loop
 
+
+    // run the jet clustering with the above jet definition
+    //----------------------------------------------------------
+    fastjet::ClusterSequence clust_seq(input_particles, jet_def);
+
+
+    // get the resulting jets ordered in pt
+    //----------------------------------------------------------
+    double ptmin = 5.0;
+    vector<fastjet::PseudoJet> inclusive_jets = sorted_by_pt(clust_seq.inclusive_jets(ptmin));
 
 
     // Four-momenta of proton, electron, virtual photon/Z^0/W^+-.
@@ -395,25 +423,63 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	h_Event_nNeutron->Fill(nNeutron);
 	h_Event_nGamma->Fill(nGamma);
 
+	h_Event_nJets->Fill(inclusive_jets.size());
 
 	// summary
 	bool anyHcal_jets = false;
+	int nHCal_jets = 0;
 
-	int nHCal_jets = FillHCals(h_Event_HCal_jets, hist_eta_energy_tmp, hist_eta_energy_denom_tmp, anyHcal_jets);
+	//int nHCal_jets = FillHCals(h_Event_HCal_jets, hist_eta_energy_tmp, hist_eta_energy_denom_tmp, anyHcal_jets);
+
+	for (unsigned int i = 0; i < inclusive_jets.size(); i++) {
+
+		fastjet::PseudoJet jet = inclusive_jets[i];
+
+		// nHCal
+		if(-4.14 < jet.eta() && jet.eta() < -1.18)
+		{
+			anyHcal_jets = true;
+			nHCal_jets++;
+		}
+
+		// bHCal
+		if(-1.1 < jet.eta() && jet.eta() < 1.1)
+		{
+			anyHcal_jets = true;
+		}
+
+		// LFHCal
+		if(1.2 < jet.eta() && jet.eta() < 4.2)
+		{
+			anyHcal_jets = true;
+		}
+
+
+		double jet_p = sqrt(jet.pt2()+jet.pz());
+
+		h_Jet_nPart->Fill(jet.constituents().size());
+		h_Jet_mass->Fill(jet.m());
+	    //h_Jet_charge->Fill(jet.m());
+		h_Jet_E->Fill(jet.E());
+		h_Jet_p->Fill(jet_p);
+		h_Jet_pT->Fill(jet.pt());
+		h_Jet_eta->Fill(jet.eta());
+
+	}
 
 
 	h_Event_Q2->Fill(Q2);
 	h_Event_x->Fill(x);
 	h_Event_y->Fill(y);
 
-	if(nHCal_jets == 0 && anyHcal_jets)
+	if(nHCal_jets == 0)
 	{
 		h_Event_nHCal_0_Q2->Fill(Q2);
 		h_Event_nHCal_0_x->Fill(x);
 		h_Event_nHCal_0_y->Fill(y);
 	}
 
-	if(nHCal_jets == 1 && anyHcal_jets)
+	if(nHCal_jets == 1)
 	{
 		h_Event_nHCal_1_Q2->Fill(Q2);
 		h_Event_nHCal_1_x->Fill(x);
@@ -421,20 +487,28 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	}
 
 
-	if(nHCal_jets == 2 && anyHcal_jets)
+	if(nHCal_jets == 2)
 	{
 		h_Event_nHCal_2_Q2->Fill(Q2);
 		h_Event_nHCal_2_x->Fill(x);
 		h_Event_nHCal_2_y->Fill(y);
 	}
 
-	if(anyHcal_jets == true) // Both jets in any HCal
+	if(anyHcal_jets) // Jets in any HCal,  Both jets in any HCal
 	{
 		h_Event_AllHCal_Q2->Fill(Q2);
 		h_Event_AllHCal_x->Fill(x);
 		h_Event_AllHCal_y->Fill(y);
 	}
 
+
+	// tell the user what was done
+	//  - the description of the algorithm used
+	//  - extract the inclusive jets with pt > 5 GeV
+	//    show the output as
+	//      {index, rap, phi, pt}
+	//----------------------------------------------------------
+	//cout << "Ran " << jet_def.description() << endl;
 
     return 1;
 }
@@ -567,6 +641,83 @@ int FillHCals(TH2F *hist, TH1F *hEne, TH1F *hEneDenom, bool &anyHcal_jets)
 
 	a = BinIdToCalo.at(sorted.at(0).first);
 	b = BinIdToCalo.at(sorted.at(1).first);
+
+	//cout<<"a ="<<a<<endl;
+	//cout<<"b ="<<b<<endl;
+
+	if(a >= 0 && b >= 0 )
+	{
+		anyHcal_jets = true;
+		//cout<<"Both jets in any HCal"<<endl;
+	}
+
+	if(a == 0 && b == 0) return 2; // 2 jets in nHCal
+	if(a == 0 || b == 0) return 1; // 1 jet in nHCal
+	if(a != 0 && b != 0) return 0; // 0 jet in nHCal
+	//if(a == 3 && b == 3) return 3; // jets in any HCal
+
+	return -1;
+
+}
+
+
+int FillHCalsJets(TH2F *hist, vector<fastjet::PseudoJet> jets)
+{
+
+
+	bool anyHcal_jets = false;
+	int nHCal_jets = 0;
+	int a = -1;
+	int b = -1;
+
+	for (unsigned int i = 0; i < jets.size(); i++) {
+
+		fastjet::PseudoJet jet = jets[i];
+
+		// nHCal
+		if(-4.14 < jet.eta() && jet.eta() < -1.18)
+		{
+			anyHcal_jets = true;
+			nHCal_jets++;
+
+			if(i==0) a = 1;
+			if(i==1) b = 1;
+		}
+
+		// bHCal
+		if(-1.1 < jet.eta() && jet.eta() < 1.1)
+		{
+			anyHcal_jets = true;
+
+			if(i==0) a = 2;
+			if(i==1) b = 2;
+		}
+
+		// LFHCal
+		if(1.2 < jet.eta() && jet.eta() < 4.2)
+		{
+			anyHcal_jets = true;
+
+			if(i==0) a = 3;
+			if(i==1) b = 3;
+		}
+
+	}
+
+	hist->Fill(a, b);
+
+	if(b >= 0)
+	{
+		hist->Fill(a, 3);
+	}
+	if(a >= 0)
+	{
+		hist->Fill(3, b);
+	}
+	if(a >= 0 && b >= 0)
+	{
+		hist->Fill(3, 3);
+	}
 
 	//cout<<"a ="<<a<<endl;
 	//cout<<"b ="<<b<<endl;
