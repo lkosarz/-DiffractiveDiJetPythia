@@ -193,13 +193,16 @@ Int_t drawHist() {
 	//delete cnv;
 	//file->Close();
 
-	drawAny("output/Events/", "data/diffractiveDiJets_ep_18x275GeV_full.root", list_Events);
+	TString file = "data/diffractiveDiJets_ep_18x275GeV_full.root";
+	file = "data/diffractiveDiJets_ep_18x275GeV_pT0GeV_full.root";
+
+	drawAny("output/Events/", file, list_Events);
 	gSystem->cd("../");
-	drawAny("output/Events/", "data/diffractiveDiJets_ep_18x275GeV_full.root", list_Events_special);
+	drawAny("output/Events/", file, list_Events_special);
 	gSystem->cd("../");
-	drawAny("output/Particles/", "data/diffractiveDiJets_ep_18x275GeV_full.root", list_Particle);
+	drawAny("output/Particles/", file, list_Particle);
 	gSystem->cd("../");
-	drawAny("output/Jets/", "data/diffractiveDiJets_ep_18x275GeV_full.root", list_Jets);
+	drawAny("output/Jets/", file, list_Jets);
 	gSystem->cd("../");
 
 

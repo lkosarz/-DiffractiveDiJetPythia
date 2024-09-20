@@ -365,7 +365,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
     // get the resulting jets ordered in pt
     //----------------------------------------------------------
-    double ptmin = 5.0;
+    double ptmin = 0.0;
     vector<fastjet::PseudoJet> inclusive_jets = sorted_by_pt(clust_seq.inclusive_jets(ptmin));
 
 
@@ -430,6 +430,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	int nHCal_jets = 0;
 
 	//int nHCal_jets = FillHCals(h_Event_HCal_jets, hist_eta_energy_tmp, hist_eta_energy_denom_tmp, anyHcal_jets);
+	FillHCalsJets(h_Event_HCal_jets, inclusive_jets);
 
 	for (unsigned int i = 0; i < inclusive_jets.size(); i++) {
 
@@ -680,8 +681,8 @@ int FillHCalsJets(TH2F *hist, vector<fastjet::PseudoJet> jets)
 			anyHcal_jets = true;
 			nHCal_jets++;
 
-			if(i==0) a = 1;
-			if(i==1) b = 1;
+			if(i==0) a = 0;
+			if(i==1) b = 0;
 		}
 
 		// bHCal
@@ -689,8 +690,8 @@ int FillHCalsJets(TH2F *hist, vector<fastjet::PseudoJet> jets)
 		{
 			anyHcal_jets = true;
 
-			if(i==0) a = 2;
-			if(i==1) b = 2;
+			if(i==0) a = 1;
+			if(i==1) b = 1;
 		}
 
 		// LFHCal
@@ -698,8 +699,8 @@ int FillHCalsJets(TH2F *hist, vector<fastjet::PseudoJet> jets)
 		{
 			anyHcal_jets = true;
 
-			if(i==0) a = 3;
-			if(i==1) b = 3;
+			if(i==0) a = 2;
+			if(i==1) b = 2;
 		}
 
 	}
