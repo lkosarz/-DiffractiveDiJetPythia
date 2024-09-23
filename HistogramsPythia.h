@@ -142,6 +142,8 @@ TH1D *h_Jet_p;
 TH1D *h_Jet_pT;
 TH1D *h_Jet_eta;
 
+TH1D *h_Jet_bHCal_part_eta;
+
 
 // temp
 
@@ -286,6 +288,8 @@ int CreateHistograms()
 	h_Jet_p = new TH1D("h_Jet_p", "Jet momentum; p [GeV/c]; counts", 500, 0.0, 50.0);
 	h_Jet_pT = new TH1D("h_Jet_pT", "Jet transverse momentum; p_{T} [GeV/c]; counts", 500, 0.0, 50.0);
 	h_Jet_eta = new TH1D("h_Jet_eta", "Jet #eta; #eta [1]; counts", 200, -5.0, 5.0);
+
+	h_Jet_bHCal_part_eta = new TH1D("h_Jet_bHCal_part_eta", "Jet in bHCal particle #eta; #eta [1]; counts", 200, -5.0, 5.0);
 
 
 	// temp

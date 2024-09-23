@@ -132,6 +132,14 @@ int main(int argc, char* argv[]) {
             break;
         }
 
+        bool isDiffractive = pythia->info.isDiffractiveA() || pythia->info.isDiffractiveB();
+        bool isHardDiffractive = pythia->info.isHardDiffractiveA() || pythia->info.isHardDiffractiveB();
+
+        //if (isDiffractive) cout<<"Diffractive"<<endl;
+        //if (isHardDiffractive) cout<<"Hard diffractive"<<endl;
+
+    	if(!(isDiffractive || isHardDiffractive)) continue;
+
         MakeEvent(pythia, eventStore, ievent, WriteTree);  // in MakeEvent we deal with the whole event and return
 
         if(WriteTree)	eventTree->Fill();
@@ -191,6 +199,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	//cout<<"NEW EVENT ---------------------------"<<endl;
 
 	std::cout<<"simulating event "<<iev<<std::endl;
+
     
 	hist_eta_energy_tmp->Reset();
 	hist_eta_energy_denom_tmp->Reset();
@@ -202,7 +211,8 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	// a jet algorithm with a given radius parameter
 	//----------------------------------------------------------
 	double R = 1.0;
-	fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, R);
+	//fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, R);
+	fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm, R);
 	vector<fastjet::PseudoJet> input_particles;
 
 	float EsumF = 0.0;
@@ -365,8 +375,10 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
     // get the resulting jets ordered in pt
     //----------------------------------------------------------
-    double ptmin = 0.0;
-    vector<fastjet::PseudoJet> inclusive_jets = sorted_by_pt(clust_seq.inclusive_jets(ptmin));
+    double ptmin = 5.0;
+    double Emin = 5.0;
+    //vector<fastjet::PseudoJet> inclusive_jets = sorted_by_pt(clust_seq.inclusive_jets(ptmin));
+    vector<fastjet::PseudoJet> inclusive_jets = sorted_by_E(clust_seq.inclusive_jets(Emin));
 
 
     // Four-momenta of proton, electron, virtual photon/Z^0/W^+-.
@@ -427,6 +439,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
 	// summary
 	bool anyHcal_jets = false;
+	bool bHCalJet = false;
 	int nHCal_jets = 0;
 
 	//int nHCal_jets = FillHCals(h_Event_HCal_jets, hist_eta_energy_tmp, hist_eta_energy_denom_tmp, anyHcal_jets);
@@ -447,6 +460,8 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		if(-1.1 < jet.eta() && jet.eta() < 1.1)
 		{
 			anyHcal_jets = true;
+			bHCalJet = true;
+
 		}
 
 		// LFHCal
@@ -465,6 +480,13 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		h_Jet_p->Fill(jet_p);
 		h_Jet_pT->Fill(jet.pt());
 		h_Jet_eta->Fill(jet.eta());
+
+		vector<PseudoJet> constituents = jet.constituents();
+
+		for (int j = 0; j < constituents.size(); ++j) {
+
+			if(bHCalJet) h_Jet_bHCal_part_eta->Fill(constituents[j].eta());
+		}
 
 	}
 
