@@ -53,6 +53,7 @@ Int_t drawHist() {
 	//gStyle->SetHistLineColor(kBlue);
 	gStyle->SetHistLineColor(kBlack);
 	gStyle->SetHistLineWidth(2);
+	//gStyle->SetPaintTextFormat(".2e");
 	gStyle->SetOptTitle(1);
 	gStyle->SetOptStat(1);
 
@@ -63,6 +64,7 @@ Int_t drawHist() {
 	vector<TString> *list_Events_special = new vector<TString>;
 	vector<TString> *list_Particle = new vector<TString>;
 	vector<TString> *list_Jets = new vector<TString>;
+	vector<TString> *list_Jets_meas = new vector<TString>;
 
 
 	// Event
@@ -70,6 +72,7 @@ Int_t drawHist() {
 
 	list_Events->push_back("h_Event_nPart_final");
 	list_Events->push_back("h_Event_nJets");
+	list_Events->push_back("h_Event_nJets_meas");
 
 	list_Events->push_back("h_Event_xQ2");
 	list_Events->push_back("h_Event_yQ2");
@@ -92,6 +95,7 @@ Int_t drawHist() {
 	list_Events->push_back("h_Event_nGamma");
 
 	list_Events->push_back("h_Event_HCal_jets");
+	list_Events->push_back("h_Event_HCal_jets_meas");
 
 	list_Events->push_back("h_Particle_eta_wE");
 
@@ -115,6 +119,23 @@ Int_t drawHist() {
 	list_Events_special->push_back("h_Event_AllHCal_Q2");
 	list_Events_special->push_back("h_Event_AllHCal_x");
 	list_Events_special->push_back("h_Event_AllHCal_y");
+
+
+	list_Events_special->push_back("h_Event_JetMeas_nHCal_0_Q2");
+	list_Events_special->push_back("h_Event_JetMeas_nHCal_0_x");
+	list_Events_special->push_back("h_Event_JetMeas_nHCal_0_y");
+
+	list_Events_special->push_back("h_Event_JetMeas_nHCal_1_Q2");
+	list_Events_special->push_back("h_Event_JetMeas_nHCal_1_x");
+	list_Events_special->push_back("h_Event_JetMeas_nHCal_1_y");
+
+	list_Events_special->push_back("h_Event_JetMeas_nHCal_2_Q2");
+	list_Events_special->push_back("h_Event_JetMeas_nHCal_2_x");
+	list_Events_special->push_back("h_Event_JetMeas_nHCal_2_y");
+
+	list_Events_special->push_back("h_Event_JetMeas_AllHCal_Q2");
+	list_Events_special->push_back("h_Event_JetMeas_AllHCal_x");
+	list_Events_special->push_back("h_Event_JetMeas_AllHCal_y");
 
 
 /*
@@ -175,6 +196,21 @@ Int_t drawHist() {
 	list_Jets->push_back("h_Jet_pT");
 	list_Jets->push_back("h_Jet_eta");
 
+	list_Jets->push_back("h_Jet_bHCal_part_eta");
+	list_Jets->push_back("h_Jet_HCal_part_eta");
+
+
+	// Jets
+	list_Jets_meas->push_back("h_Jet_meas_nPart");
+	list_Jets_meas->push_back("h_Jet_meas_mass");
+	list_Jets_meas->push_back("h_Jet_meas_charge");
+	list_Jets_meas->push_back("h_Jet_meas_E");
+	list_Jets_meas->push_back("h_Jet_meas_p");
+	list_Jets_meas->push_back("h_Jet_meas_pT");
+	list_Jets_meas->push_back("h_Jet_meas_eta");
+
+	list_Jets_meas->push_back("h_Jet_meas_bHCal_part_eta");
+	list_Jets_meas->push_back("h_Jet_meas_HCal_part_eta");
 
 	//TCanvas *cnv = new TCanvas();
 	//cnv->cd();
@@ -189,12 +225,16 @@ Int_t drawHist() {
 	gSystem->mkdir("output/Events/");
 	gSystem->mkdir("output/Particles/");
 	gSystem->mkdir("output/Jets/");
+	gSystem->mkdir("output/Jets_meas/");
 
 	//delete cnv;
 	//file->Close();
 
 	TString file = "data/diffractiveDiJets_ep_18x275GeV_full.root";
-	file = "data/diffractiveDiJets_ep_18x275GeV_pT0GeV_full.root";
+	//file = "data/diffractiveDiJets_ep_18x275GeV_pT0GeV_full.root";
+	//file = "data/diffractiveDiJets_ep_18x275GeV_ee_kT_full.root";
+	file = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_full.root";
+
 
 	drawAny("output/Events/", file, list_Events);
 	gSystem->cd("../");
@@ -203,6 +243,8 @@ Int_t drawHist() {
 	drawAny("output/Particles/", file, list_Particle);
 	gSystem->cd("../");
 	drawAny("output/Jets/", file, list_Jets);
+	gSystem->cd("../");
+	drawAny("output/Jets_meas/", file, list_Jets_meas);
 	gSystem->cd("../");
 
 

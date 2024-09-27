@@ -30,6 +30,11 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree =
                                          // stores data in tuple)
 int findFinalElectron(const Event& event);
 
+int isInHcals(Particle part);
+int isInHcals(double eta);
+bool isInTracker(double eta);
+//int isInTracker(Particle part);
+
 int FillHCals(TH2F *hist, TH1F *hEne, TH1F *hEneDenom, bool &anyHcal_jets);
 int FillHCalsJets(TH2F *hist, vector<fastjet::PseudoJet> jets);
 
@@ -211,9 +216,12 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	// a jet algorithm with a given radius parameter
 	//----------------------------------------------------------
 	double R = 1.0;
-	//fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, R);
-	fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm, R);
+	fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, R);
+	//fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm);
+	//fastjet::JetDefinition jet_def_meas(fastjet::ee_kt_algorithm);
+
 	vector<fastjet::PseudoJet> input_particles;
+	vector<fastjet::PseudoJet> input_particles_meas;
 
 	float EsumF = 0.0;
 	double EsumD = 0.0;
@@ -307,6 +315,22 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		// read in input particles
 		//----------------------------------------------------------
 		input_particles.push_back(fastjet::PseudoJet(part.px(),part.py(),part.pz(),part.e()));
+		//cout<<"input_particles add = "<<i<<endl;
+
+		if(isInHcals(part.eta())>0)
+		{
+			if(part.isCharged() && isInTracker(part.eta()))
+			{
+				input_particles_meas.push_back(fastjet::PseudoJet(part.px(),part.py(),part.pz(),part.e()));
+				//cout<<"input_particles_meas add charged = "<<i<<endl;
+			}
+			if(part.isNeutral())
+			{
+				input_particles_meas.push_back(fastjet::PseudoJet(part.px(),part.py(),part.pz(),part.e()));
+				//cout<<"input_particles_meas add neutral = "<<i<<endl;
+			}
+
+		}
 
 
 		if(11>part.status() || part.status()>19) // exclude beam particles
@@ -371,14 +395,19 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
     // run the jet clustering with the above jet definition
     //----------------------------------------------------------
     fastjet::ClusterSequence clust_seq(input_particles, jet_def);
+    fastjet::ClusterSequence clust_seq_meas(input_particles_meas, jet_def);
 
 
     // get the resulting jets ordered in pt
     //----------------------------------------------------------
     double ptmin = 5.0;
-    double Emin = 5.0;
+    double Emin = 4.0;
     //vector<fastjet::PseudoJet> inclusive_jets = sorted_by_pt(clust_seq.inclusive_jets(ptmin));
     vector<fastjet::PseudoJet> inclusive_jets = sorted_by_E(clust_seq.inclusive_jets(Emin));
+    vector<fastjet::PseudoJet> measured_jets = sorted_by_E(clust_seq_meas.inclusive_jets(Emin));
+
+	//cout<<"inclusive_jets size = "<<inclusive_jets.size()<<endl;
+	//cout<<"measured_jets size = "<<measured_jets.size()<<endl;
 
 
     // Four-momenta of proton, electron, virtual photon/Z^0/W^+-.
@@ -436,24 +465,33 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	h_Event_nGamma->Fill(nGamma);
 
 	h_Event_nJets->Fill(inclusive_jets.size());
+	h_Event_nJets_meas->Fill(measured_jets.size());
 
 	// summary
 	bool anyHcal_jets = false;
+	bool anyHcal_jets_meas = false;
 	bool bHCalJet = false;
+	bool bHCalJet_meas = false;
 	int nHCal_jets = 0;
+	int nHCal_jets_meas = 0;
 
 	//int nHCal_jets = FillHCals(h_Event_HCal_jets, hist_eta_energy_tmp, hist_eta_energy_denom_tmp, anyHcal_jets);
 	FillHCalsJets(h_Event_HCal_jets, inclusive_jets);
+	FillHCalsJets(h_Event_HCal_jets_meas, measured_jets);
+
 
 	for (unsigned int i = 0; i < inclusive_jets.size(); i++) {
 
 		fastjet::PseudoJet jet = inclusive_jets[i];
+
+		int HCal_id = 0; // none = 0, nHCal = 1, bHCal = 2, LFHCAL = 3
 
 		// nHCal
 		if(-4.14 < jet.eta() && jet.eta() < -1.18)
 		{
 			anyHcal_jets = true;
 			nHCal_jets++;
+			HCal_id = 1;
 		}
 
 		// bHCal
@@ -461,13 +499,14 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		{
 			anyHcal_jets = true;
 			bHCalJet = true;
-
+			HCal_id = 2;
 		}
 
 		// LFHCal
 		if(1.2 < jet.eta() && jet.eta() < 4.2)
 		{
 			anyHcal_jets = true;
+			HCal_id = 3;
 		}
 
 
@@ -486,8 +525,58 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		for (int j = 0; j < constituents.size(); ++j) {
 
 			if(bHCalJet) h_Jet_bHCal_part_eta->Fill(constituents[j].eta());
+			h_Jet_HCal_part_eta->Fill(constituents[j].eta(), HCal_id);
 		}
 
+	}
+
+	for (unsigned int i = 0; i < measured_jets.size(); i++) {
+
+		fastjet::PseudoJet jet = measured_jets[i];
+
+		int HCal_meas_id = 0; // none = 0, nHCal = 1, bHCal = 2, LFHCAL = 3
+
+		// nHCal
+		if(-4.14 < jet.eta() && jet.eta() < -1.18)
+		{
+			anyHcal_jets_meas = true;
+			nHCal_jets_meas++;
+			HCal_meas_id = 1;
+		}
+
+		// bHCal
+		if(-1.1 < jet.eta() && jet.eta() < 1.1)
+		{
+			anyHcal_jets_meas = true;
+			bHCalJet_meas = true;
+			HCal_meas_id = 2;
+		}
+
+		// LFHCal
+		if(1.2 < jet.eta() && jet.eta() < 4.2)
+		{
+			anyHcal_jets_meas = true;
+			HCal_meas_id = 3;
+		}
+
+
+		double jet_p = sqrt(jet.pt2()+jet.pz());
+
+		h_Jet_meas_nPart->Fill(jet.constituents().size());
+		h_Jet_meas_mass->Fill(jet.m());
+	    //h_Jet_meas_charge->Fill(jet.m());
+		h_Jet_meas_E->Fill(jet.E());
+		h_Jet_meas_p->Fill(jet_p);
+		h_Jet_meas_pT->Fill(jet.pt());
+		h_Jet_meas_eta->Fill(jet.eta());
+
+		vector<PseudoJet> measured_constituents = jet.constituents();
+
+		for (int j = 0; j < measured_constituents.size(); ++j) {
+
+			if(bHCalJet) h_Jet_meas_bHCal_part_eta->Fill(measured_constituents[j].eta());
+			h_Jet_meas_HCal_part_eta->Fill(measured_constituents[j].eta(), HCal_meas_id);
+		}
 	}
 
 
@@ -495,6 +584,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	h_Event_x->Fill(x);
 	h_Event_y->Fill(y);
 
+	// jets
 	if(nHCal_jets == 0)
 	{
 		h_Event_nHCal_0_Q2->Fill(Q2);
@@ -522,6 +612,37 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		h_Event_AllHCal_Q2->Fill(Q2);
 		h_Event_AllHCal_x->Fill(x);
 		h_Event_AllHCal_y->Fill(y);
+	}
+
+
+	// measured jets
+	if(nHCal_jets_meas == 0)
+	{
+		h_Event_JetMeas_nHCal_0_Q2->Fill(Q2);
+		h_Event_JetMeas_nHCal_0_x->Fill(x);
+		h_Event_JetMeas_nHCal_0_y->Fill(y);
+	}
+
+	if(nHCal_jets_meas == 1)
+	{
+		h_Event_JetMeas_nHCal_1_Q2->Fill(Q2);
+		h_Event_JetMeas_nHCal_1_x->Fill(x);
+		h_Event_JetMeas_nHCal_1_y->Fill(y);
+	}
+
+
+	if(nHCal_jets_meas == 2)
+	{
+		h_Event_JetMeas_nHCal_2_Q2->Fill(Q2);
+		h_Event_JetMeas_nHCal_2_x->Fill(x);
+		h_Event_JetMeas_nHCal_2_y->Fill(y);
+	}
+
+	if(anyHcal_jets_meas) // Jets in any HCal,  Both jets in any HCal
+	{
+		h_Event_JetMeas_AllHCal_Q2->Fill(Q2);
+		h_Event_JetMeas_AllHCal_x->Fill(x);
+		h_Event_JetMeas_AllHCal_y->Fill(y);
 	}
 
 
@@ -825,4 +946,40 @@ void PrintVec(std::vector<pair<int, double>> input)
 	}
 	cout<<endl;
 
+}
+
+int isInHcals(double eta)
+{
+
+	// nHCal
+	if(-4.14 < eta && eta < -1.18)
+	{
+		return 1;
+	}
+
+	// bHCal
+	if(-1.1 < eta && eta < 1.1)
+	{
+		return 2;
+	}
+
+	// LFHCal
+	if(1.2 < eta && eta < 4.2)
+	{
+		return 3;
+	}
+
+	return 0;
+}
+
+
+bool isInTracker(double eta)
+{
+	// MPGD https://indico.bnl.gov/event/20727/contributions/93067/
+	if(-3.61 < eta && eta < 3.44)
+	{
+		return true;
+	}
+
+	return false;
 }

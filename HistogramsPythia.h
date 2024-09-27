@@ -35,6 +35,7 @@ TH1F *h_Events;
 
 TH1F *h_Event_nPart_final;
 TH1F *h_Event_nJets;
+TH1F *h_Event_nJets_meas;
 
 TH2F *h_Event_xQ2;
 TH2F *h_Event_yQ2;
@@ -79,7 +80,25 @@ TH1F *h_Event_AllHCal_Q2;
 TH1F *h_Event_AllHCal_x;
 TH1F *h_Event_AllHCal_y;
 
+
+TH1F *h_Event_JetMeas_nHCal_0_Q2;
+TH1F *h_Event_JetMeas_nHCal_0_x;
+TH1F *h_Event_JetMeas_nHCal_0_y;
+
+TH1F *h_Event_JetMeas_nHCal_1_Q2;
+TH1F *h_Event_JetMeas_nHCal_1_x;
+TH1F *h_Event_JetMeas_nHCal_1_y;
+
+TH1F *h_Event_JetMeas_nHCal_2_Q2;
+TH1F *h_Event_JetMeas_nHCal_2_x;
+TH1F *h_Event_JetMeas_nHCal_2_y;
+
+TH1F *h_Event_JetMeas_AllHCal_Q2;
+TH1F *h_Event_JetMeas_AllHCal_x;
+TH1F *h_Event_JetMeas_AllHCal_y;
+
 TH2F *h_Event_HCal_jets;
+TH2F *h_Event_HCal_jets_meas;
 
 // Particles
 
@@ -142,7 +161,21 @@ TH1D *h_Jet_p;
 TH1D *h_Jet_pT;
 TH1D *h_Jet_eta;
 
+// Jets measured
+TH1D *h_Jet_meas_nPart;
+TH1D *h_Jet_meas_mass;
+TH1D *h_Jet_meas_charge;
+TH1D *h_Jet_meas_E;
+TH1D *h_Jet_meas_p;
+TH1D *h_Jet_meas_pT;
+TH1D *h_Jet_meas_eta;
+
+
 TH1D *h_Jet_bHCal_part_eta;
+TH1D *h_Jet_meas_bHCal_part_eta;
+
+TH2D *h_Jet_HCal_part_eta;
+TH2D *h_Jet_meas_HCal_part_eta;
 
 
 // temp
@@ -171,6 +204,8 @@ int CreateHistograms()
 
 	h_Event_nPart_final = new TH1F("h_Event_nPart_final", "Number of final MC particles; N_{MC} [1]; counts", 2001, -0.5, 2000.5);
 	h_Event_nJets = new TH1F("h_Event_nJets", "Number of jets; N_{jet} [1]; counts", 21, -0.5, 20.5);
+	h_Event_nJets_meas = new TH1F("h_Event_nJets_meas", "Number of measured jets; N_{jet} [1]; counts", 21, -0.5, 20.5);
+
 
 	h_Event_xQ2 = new TH2F("h_Event_xQ2", "Event Q^{2} vs. x; x [1]; Q^{2} [GeV^{2}/c^{2}]; counts", nbins_x, logBinsArray_x, 500, 0.0, 5.0);
 	h_Event_yQ2 = new TH2F("h_Event_yQ2", "Event Q^{2} vs. inelasticity y; y [1]; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 1.0, 500, 0.0, 5.0);
@@ -218,7 +253,26 @@ int CreateHistograms()
 	h_Event_AllHCal_y = new TH1F("h_Event_AllHCal_y", "Event with jets in any HCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
 
+	h_Event_JetMeas_nHCal_0_Q2 = new TH1F("h_Event_JetMeas_nHCal_0_Q2", "Event with 0 jets measured in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
+	h_Event_JetMeas_nHCal_0_x = new TH1F("h_Event_JetMeas_nHCal_0_x", "Event with 0 jets measured in nHCal x; x [1]; counts", nbins_x, logBinsArray_x);
+	h_Event_JetMeas_nHCal_0_y = new TH1F("h_Event_JetMeas_nHCal_0_y", "Event with 0 jets measured in nHCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
+
+	h_Event_JetMeas_nHCal_1_Q2 = new TH1F("h_Event_JetMeas_nHCal_1_Q2", "Event with 1 jet measured in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
+	h_Event_JetMeas_nHCal_1_x = new TH1F("h_Event_JetMeas_nHCal_1_x", "Event with 1 jet measured in nHCal x; x [1]; counts", nbins_x, logBinsArray_x);
+	h_Event_JetMeas_nHCal_1_y = new TH1F("h_Event_JetMeas_nHCal_1_y", "Event with 1 jet measured in nHCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
+
+	h_Event_JetMeas_nHCal_2_Q2 = new TH1F("h_Event_JetMeas_nHCal_2_Q2", "Event with 2 jets measured in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
+	h_Event_JetMeas_nHCal_2_x = new TH1F("h_Event_JetMeas_nHCal_2_x", "Event with 2 jets measured in nHCal x; x [1]; counts", nbins_x, logBinsArray_x);
+	h_Event_JetMeas_nHCal_2_y = new TH1F("h_Event_JetMeas_nHCal_2_y", "Event with 2 jets measured in nHCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
+
+	h_Event_JetMeas_AllHCal_Q2 = new TH1F("h_Event_JetMeas_AllHCal_Q2", "Event with jets measured in any HCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
+	h_Event_JetMeas_AllHCal_x = new TH1F("h_Event_JetMeas_AllHCal_x", "Event with jets measured in any HCal x; x [1]; counts", nbins_x, logBinsArray_x);
+	h_Event_JetMeas_AllHCal_y = new TH1F("h_Event_JetMeas_AllHCal_y", "Event with jets measured in any HCal inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
+
+
+
 	h_Event_HCal_jets = new TH2F("h_Event_HCal_jets", "Event with dijets in HCals; Jet #1; Jet #2; counts", 4, 0.0, 4.0, 4, 0.0, 4.0);
+	h_Event_HCal_jets_meas = new TH2F("h_Event_HCal_jets_meas", "Event with measured dijets in HCals; Jet #1; Jet #2; counts", 4, 0.0, 4.0, 4, 0.0, 4.0);
 
 	h_Event_HCal_jets->GetXaxis()->SetBinLabel(1, "nHCal");
 	h_Event_HCal_jets->GetXaxis()->SetBinLabel(2, "Barrel HCal");
@@ -229,6 +283,18 @@ int CreateHistograms()
 	h_Event_HCal_jets->GetYaxis()->SetBinLabel(2, "Barrel HCal");
 	h_Event_HCal_jets->GetYaxis()->SetBinLabel(3, "LFHCAL");
 	h_Event_HCal_jets->GetYaxis()->SetBinLabel(4, "Any");
+
+
+	h_Event_HCal_jets_meas->GetXaxis()->SetBinLabel(1, "nHCal");
+	h_Event_HCal_jets_meas->GetXaxis()->SetBinLabel(2, "Barrel HCal");
+	h_Event_HCal_jets_meas->GetXaxis()->SetBinLabel(3, "LFHCAL");
+	h_Event_HCal_jets_meas->GetXaxis()->SetBinLabel(4, "Any");
+
+	h_Event_HCal_jets_meas->GetYaxis()->SetBinLabel(1, "nHCal");
+	h_Event_HCal_jets_meas->GetYaxis()->SetBinLabel(2, "Barrel HCal");
+	h_Event_HCal_jets_meas->GetYaxis()->SetBinLabel(3, "LFHCAL");
+	h_Event_HCal_jets_meas->GetYaxis()->SetBinLabel(4, "Any");
+
 
 	// Particles
 	h_Particle_eta = new TH1F("h_Particle_eta", "MC particle #eta; #eta; counts", 200, -10.0, 10.0);
@@ -289,7 +355,31 @@ int CreateHistograms()
 	h_Jet_pT = new TH1D("h_Jet_pT", "Jet transverse momentum; p_{T} [GeV/c]; counts", 500, 0.0, 50.0);
 	h_Jet_eta = new TH1D("h_Jet_eta", "Jet #eta; #eta [1]; counts", 200, -5.0, 5.0);
 
+
+	// Jets measured
+	h_Jet_meas_nPart = new TH1D("h_Jet_meas_nPart", "Jet measured number of particles; N_{part} [1]; counts", 201, -0.5, 200.5);
+	h_Jet_meas_mass = new TH1D("h_Jet_meas_mass", "Jet measured mass; m [GeV/c^{2}]; counts", 2000, 0.0, 20.0);
+    h_Jet_meas_charge = new TH1D("h_Jet_meas_charge", "Jet measured charge; q [1]; counts", 101, -50.5, 50.5);
+	h_Jet_meas_E = new TH1D("h_Jet_meas_E", "Jet measured energy; E [GeV]; counts", 500, 0.0, 50.0);
+	h_Jet_meas_p = new TH1D("h_Jet_meas_p", "Jet measured momentum; p [GeV/c]; counts", 500, 0.0, 50.0);
+	h_Jet_meas_pT = new TH1D("h_Jet_meas_pT", "Jet measured transverse momentum; p_{T} [GeV/c]; counts", 500, 0.0, 50.0);
+	h_Jet_meas_eta = new TH1D("h_Jet_meas_eta", "Jet measured #eta; #eta [1]; counts", 200, -5.0, 5.0);
+
 	h_Jet_bHCal_part_eta = new TH1D("h_Jet_bHCal_part_eta", "Jet in bHCal particle #eta; #eta [1]; counts", 200, -5.0, 5.0);
+	h_Jet_meas_bHCal_part_eta = new TH1D("h_Jet_meas_bHCal_part_eta", "Jet measured in bHCal particle #eta; #eta [1]; counts", 200, -5.0, 5.0);
+
+	h_Jet_HCal_part_eta = new TH2D("h_Jet_HCal_part_eta", "Jet in HCals particle #eta; #eta [1]; HCal; counts", 200, -5.0, 5.0, 4, 0.0, 4.0);
+	h_Jet_meas_HCal_part_eta = new TH2D("h_Jet_meas_HCal_part_eta", "Jet measured in HCals particle #eta; #eta [1]; HCal; counts", 200, -5.0, 5.0, 4, 0.0, 4.0);
+
+	h_Jet_HCal_part_eta->GetYaxis()->SetBinLabel(1, "no HCal");
+	h_Jet_HCal_part_eta->GetYaxis()->SetBinLabel(2, "nHCal");
+	h_Jet_HCal_part_eta->GetYaxis()->SetBinLabel(3, "bHCal");
+	h_Jet_HCal_part_eta->GetYaxis()->SetBinLabel(4, "LFHCAL");
+
+	h_Jet_meas_HCal_part_eta->GetYaxis()->SetBinLabel(1, "no HCal");
+	h_Jet_meas_HCal_part_eta->GetYaxis()->SetBinLabel(2, "nHCal");
+	h_Jet_meas_HCal_part_eta->GetYaxis()->SetBinLabel(3, "bHCal");
+	h_Jet_meas_HCal_part_eta->GetYaxis()->SetBinLabel(4, "LFHCAL");
 
 
 	// temp
