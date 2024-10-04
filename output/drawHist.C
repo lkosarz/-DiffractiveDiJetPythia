@@ -69,6 +69,7 @@ Int_t drawHist() {
 
 	// Event
 	list_Events->push_back("h_Events");
+	list_Events->push_back("h_Events_Diffractive");
 
 	list_Events->push_back("h_Event_nPart_final");
 	list_Events->push_back("h_Event_nJets");
@@ -195,6 +196,7 @@ Int_t drawHist() {
 	list_Jets->push_back("h_Jet_p");
 	list_Jets->push_back("h_Jet_pT");
 	list_Jets->push_back("h_Jet_eta");
+	list_Jets->push_back("h_Jet_deta");
 
 	list_Jets->push_back("h_Jet_bHCal_part_eta");
 	list_Jets->push_back("h_Jet_HCal_part_eta");
@@ -208,6 +210,7 @@ Int_t drawHist() {
 	list_Jets_meas->push_back("h_Jet_meas_p");
 	list_Jets_meas->push_back("h_Jet_meas_pT");
 	list_Jets_meas->push_back("h_Jet_meas_eta");
+	list_Jets_meas->push_back("h_Jet_meas_deta");
 
 	list_Jets_meas->push_back("h_Jet_meas_bHCal_part_eta");
 	list_Jets_meas->push_back("h_Jet_meas_HCal_part_eta");
@@ -233,8 +236,8 @@ Int_t drawHist() {
 	TString file = "data/diffractiveDiJets_ep_18x275GeV_full.root";
 	//file = "data/diffractiveDiJets_ep_18x275GeV_pT0GeV_full.root";
 	//file = "data/diffractiveDiJets_ep_18x275GeV_ee_kT_full.root";
-	file = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_full.root";
-
+	//file = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_full.root";
+	file = "data/diffractiveDiJets_ep_18x275GeV_ee_genkT_full.root";
 
 	drawAny("output/Events/", file, list_Events);
 	gSystem->cd("../");

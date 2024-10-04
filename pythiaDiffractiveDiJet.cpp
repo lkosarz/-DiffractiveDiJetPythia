@@ -147,7 +147,11 @@ int main(int argc, char* argv[]) {
 
         MakeEvent(pythia, eventStore, ievent, WriteTree);  // in MakeEvent we deal with the whole event and return
 
-        if(WriteTree)	eventTree->Fill();
+        if(WriteTree)
+        {
+        	eventTree->Fill();
+        	eventStore->Clear();
+        }
         ievent++;
 
         if (ievent%pace == 0) {
@@ -203,7 +207,13 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
 	//cout<<"NEW EVENT ---------------------------"<<endl;
 
-	std::cout<<"simulating event "<<iev<<std::endl;
+	//std::cout<<"simulating event "<<iev<<std::endl;
+
+
+	if(pythia->info.isDiffractiveA()) h_Events_Diffractive->Fill(0);
+	if(pythia->info.isDiffractiveB()) h_Events_Diffractive->Fill(1);
+	if(pythia->info.isHardDiffractiveA()) h_Events_Diffractive->Fill(2);
+	if(pythia->info.isHardDiffractiveB()) h_Events_Diffractive->Fill(3);
 
     
 	hist_eta_energy_tmp->Reset();
@@ -216,8 +226,10 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	// a jet algorithm with a given radius parameter
 	//----------------------------------------------------------
 	double R = 1.0;
-	fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, R);
+	double p = -1.0;
+	//fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, R);
 	//fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm);
+	fastjet::JetDefinition jet_def(fastjet::ee_genkt_algorithm, R, p);
 	//fastjet::JetDefinition jet_def_meas(fastjet::ee_kt_algorithm);
 
 	vector<fastjet::PseudoJet> input_particles;
@@ -400,11 +412,36 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
     // get the resulting jets ordered in pt
     //----------------------------------------------------------
-    double ptmin = 5.0;
-    double Emin = 4.0;
+    double ptmin = 0.0; // 5.0 [GeV/c]
+    double Emin = 4.0; // 5.0 [GeV/c]
+    vector<fastjet::PseudoJet> inclusive_jets;
+    vector<fastjet::PseudoJet> measured_jets;
+
     //vector<fastjet::PseudoJet> inclusive_jets = sorted_by_pt(clust_seq.inclusive_jets(ptmin));
-    vector<fastjet::PseudoJet> inclusive_jets = sorted_by_E(clust_seq.inclusive_jets(Emin));
-    vector<fastjet::PseudoJet> measured_jets = sorted_by_E(clust_seq_meas.inclusive_jets(Emin));
+    //inclusive_jets = sorted_by_E(clust_seq.inclusive_jets(ptmin));
+    //measured_jets = sorted_by_E(clust_seq_meas.inclusive_jets(ptmin));
+
+    vector<fastjet::PseudoJet> inclusive_jets_precut = sorted_by_E(clust_seq.inclusive_jets(ptmin));
+    vector<fastjet::PseudoJet> measured_jets_precut = sorted_by_E(clust_seq_meas.inclusive_jets(ptmin));
+
+
+    for (int i = 0; i < inclusive_jets_precut.size(); ++i)
+    {
+		fastjet::PseudoJet jet = inclusive_jets_precut[i];
+
+		if(jet.E()<Emin) continue;
+
+    	inclusive_jets.push_back(jet);
+	}
+
+    for (int i = 0; i < measured_jets_precut.size(); ++i)
+    {
+		fastjet::PseudoJet jet = measured_jets_precut[i];
+
+		if(jet.E()<Emin) continue;
+
+		measured_jets.push_back(jet);
+	}
 
 	//cout<<"inclusive_jets size = "<<inclusive_jets.size()<<endl;
 	//cout<<"measured_jets size = "<<measured_jets.size()<<endl;
@@ -520,6 +557,16 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		h_Jet_pT->Fill(jet.pt());
 		h_Jet_eta->Fill(jet.eta());
 
+
+		for (unsigned int j = 0; j < inclusive_jets.size(); j++) {
+
+			if(i==j) continue;
+
+			fastjet::PseudoJet jet2 = inclusive_jets[j];
+
+			h_Jet_deta->Fill(jet.eta()-jet2.eta());
+		}
+
 		vector<PseudoJet> constituents = jet.constituents();
 
 		for (int j = 0; j < constituents.size(); ++j) {
@@ -570,6 +617,16 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		h_Jet_meas_pT->Fill(jet.pt());
 		h_Jet_meas_eta->Fill(jet.eta());
 
+		for (unsigned int j = 0; j < measured_jets.size(); j++) {
+
+			if(i==j) continue;
+
+			fastjet::PseudoJet jet2 = measured_jets[j];
+
+			h_Jet_meas_deta->Fill(jet.eta()-jet2.eta());
+		}
+
+
 		vector<PseudoJet> measured_constituents = jet.constituents();
 
 		for (int j = 0; j < measured_constituents.size(); ++j) {
@@ -583,6 +640,14 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	h_Event_Q2->Fill(Q2);
 	h_Event_x->Fill(x);
 	h_Event_y->Fill(y);
+
+	// events with at least 2 jets
+    if(inclusive_jets.size() >= 2)
+    {
+    	h_Event_jets_Q2->Fill(Q2);
+    	h_Event_jets_x->Fill(x);
+    	h_Event_jets_y->Fill(y);
+    }
 
 	// jets
 	if(nHCal_jets == 0)

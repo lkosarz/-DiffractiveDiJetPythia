@@ -33,6 +33,8 @@ void MakeLogBins(double *array, int nbins, double binLo, double binHi)
 
 TH1F *h_Events;
 
+TH1F *h_Events_Diffractive;
+
 TH1F *h_Event_nPart_final;
 TH1F *h_Event_nJets;
 TH1F *h_Event_nJets_meas;
@@ -63,6 +65,10 @@ TH1F *h_Event_nGamma;
 TH1F *h_Event_Q2;
 TH1F *h_Event_x;
 TH1F *h_Event_y;
+
+TH1F *h_Event_jets_Q2;
+TH1F *h_Event_jets_x;
+TH1F *h_Event_jets_y;
 
 TH1F *h_Event_nHCal_0_Q2;
 TH1F *h_Event_nHCal_0_x;
@@ -160,6 +166,7 @@ TH1D *h_Jet_E;
 TH1D *h_Jet_p;
 TH1D *h_Jet_pT;
 TH1D *h_Jet_eta;
+TH1D *h_Jet_deta;
 
 // Jets measured
 TH1D *h_Jet_meas_nPart;
@@ -169,6 +176,7 @@ TH1D *h_Jet_meas_E;
 TH1D *h_Jet_meas_p;
 TH1D *h_Jet_meas_pT;
 TH1D *h_Jet_meas_eta;
+TH1D *h_Jet_meas_deta;
 
 
 TH1D *h_Jet_bHCal_part_eta;
@@ -201,6 +209,13 @@ int CreateHistograms()
 	// Event
 
 	h_Events = new TH1F("h_Events", "Number of events; events; counts", 10, 0.0, 10.0);
+
+	h_Events_Diffractive = new TH1F("h_Events_Diffractive", "Number of diffractive events; events; counts", 10, 0.0, 10.0);
+
+	h_Events_Diffractive->GetXaxis()->SetBinLabel(1, "Diffractive A");
+	h_Events_Diffractive->GetXaxis()->SetBinLabel(2, "Diffractive B");
+	h_Events_Diffractive->GetXaxis()->SetBinLabel(3, "Hard diffractive A");
+	h_Events_Diffractive->GetXaxis()->SetBinLabel(4, "Hard diffractive B");
 
 	h_Event_nPart_final = new TH1F("h_Event_nPart_final", "Number of final MC particles; N_{MC} [1]; counts", 2001, -0.5, 2000.5);
 	h_Event_nJets = new TH1F("h_Event_nJets", "Number of jets; N_{jet} [1]; counts", 21, -0.5, 20.5);
@@ -235,6 +250,10 @@ int CreateHistograms()
 	h_Event_Q2 = new TH1F("h_Event_Q2", "Event Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
 	h_Event_x = new TH1F("h_Event_x", "Event x; x [1]; counts", nbins_x, logBinsArray_x);
 	h_Event_y = new TH1F("h_Event_y", "Event inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
+
+	h_Event_jets_Q2 = new TH1F("h_Event_jets_Q2", "Event with jets>=2 Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
+	h_Event_jets_x = new TH1F("h_Event_jets_x", "Event with jets>=2 x; x [1]; counts", nbins_x, logBinsArray_x);
+	h_Event_jets_y = new TH1F("h_Event_jets_y", "Event with jets>=2 inelasticity y; y [1]; counts", 1000, 0.0, 1.0);
 
 	h_Event_nHCal_0_Q2 = new TH1F("h_Event_nHCal_0_Q2", "Event with 0 jets in nHCal Q^{2}; Q^{2} [GeV^{2}/c^{2}]; counts", 1000, 0.0, 10.0);
 	h_Event_nHCal_0_x = new TH1F("h_Event_nHCal_0_x", "Event with 0 jets in nHCal x; x [1]; counts", nbins_x, logBinsArray_x);
@@ -354,6 +373,7 @@ int CreateHistograms()
 	h_Jet_p = new TH1D("h_Jet_p", "Jet momentum; p [GeV/c]; counts", 500, 0.0, 50.0);
 	h_Jet_pT = new TH1D("h_Jet_pT", "Jet transverse momentum; p_{T} [GeV/c]; counts", 500, 0.0, 50.0);
 	h_Jet_eta = new TH1D("h_Jet_eta", "Jet #eta; #eta [1]; counts", 200, -5.0, 5.0);
+	h_Jet_deta = new TH1D("h_Jet_deta", "Jet #Delta#eta; #Delta#eta [1]; counts", 400, -10.0, 10.0);
 
 
 	// Jets measured
@@ -364,6 +384,7 @@ int CreateHistograms()
 	h_Jet_meas_p = new TH1D("h_Jet_meas_p", "Jet measured momentum; p [GeV/c]; counts", 500, 0.0, 50.0);
 	h_Jet_meas_pT = new TH1D("h_Jet_meas_pT", "Jet measured transverse momentum; p_{T} [GeV/c]; counts", 500, 0.0, 50.0);
 	h_Jet_meas_eta = new TH1D("h_Jet_meas_eta", "Jet measured #eta; #eta [1]; counts", 200, -5.0, 5.0);
+	h_Jet_meas_deta = new TH1D("h_Jet_meas_deta", "Jet measured #Delta#eta; #Delta#eta [1]; counts", 400, -10.0, 10.0);
 
 	h_Jet_bHCal_part_eta = new TH1D("h_Jet_bHCal_part_eta", "Jet in bHCal particle #eta; #eta [1]; counts", 200, -5.0, 5.0);
 	h_Jet_meas_bHCal_part_eta = new TH1D("h_Jet_meas_bHCal_part_eta", "Jet measured in bHCal particle #eta; #eta [1]; counts", 200, -5.0, 5.0);

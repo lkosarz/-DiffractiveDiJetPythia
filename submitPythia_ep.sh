@@ -44,3 +44,5 @@ cp $TMPDIR/diffractiveDiJets_ep_18x275GeV.hepmc3 $SLURM_SUBMIT_DIR/output/hepmc/
 #sgather -k $TMPDIR/diffractiveDiJets_ep_18x275GeV_$SLURM_ARRAY_TASK_ID_hist.root $SLURM_SUBMIT_DIR/output/output/diffractiveDiJets_ep_18x275GeV_$SLURM_ARRAY_TASK_ID_hist.root
 #sgather -k $TMPDIR/diffractiveDiJets_ep_18x275GeV_$SLURM_ARRAY_TASK_ID_tree.root $SLURM_SUBMIT_DIR/output/tree/diffractiveDiJets_ep_18x275GeV_$SLURM_ARRAY_TASK_ID_tree.root
 #sgather -k $TMPDIR/diffractiveDiJets_ep_18x275GeV_$SLURM_ARRAY_TASK_ID.hepmc3 $SLURM_SUBMIT_DIR/output/hepmc/diffractiveDiJets_ep_18x275GeV_$SLURM_ARRAY_TASK_ID.hepmc3
+
+#sbatch --array=1-200 --account=PAS2524 submitPythia_ep.sh | tee submit.log

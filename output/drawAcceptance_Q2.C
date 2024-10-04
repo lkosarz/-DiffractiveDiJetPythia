@@ -36,7 +36,7 @@ using namespace std;
 
 
 /////////////////////////////////////////////////////////////
-void drawAcceptance_Q2(TString infile = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_full.root", TString mkdir = "Acceptance", TString outfile = "Acceptance_Q2.root") {
+void drawAcceptance_Q2(TString infile = "data/diffractiveDiJets_ep_18x275GeV_ee_genkT_full.root", TString mkdir = "Acceptance", TString outfile = "Acceptance_Q2.root") {
 
 	style();
 	gStyle->SetOptStat(0);
