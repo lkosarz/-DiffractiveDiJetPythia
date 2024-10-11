@@ -62,18 +62,23 @@ Int_t drawHist() {
 
 	vector<TString> *list_Events = new vector<TString>;
 	vector<TString> *list_Events_special = new vector<TString>;
+	vector<TString> *list_Partons = new vector<TString>;
 	vector<TString> *list_Particle = new vector<TString>;
 	vector<TString> *list_Jets = new vector<TString>;
 	vector<TString> *list_Jets_meas = new vector<TString>;
-
+	vector<TString> *list_Jets_meas_no_nHCal = new vector<TString>;
+	vector<TString> *list_Jets_Partons = new vector<TString>;
 
 	// Event
 	list_Events->push_back("h_Events");
+	list_Events->push_back("h_Events_types");
 	list_Events->push_back("h_Events_Diffractive");
+	list_Events->push_back("h_Events_nPartonsOut");
 
 	list_Events->push_back("h_Event_nPart_final");
 	list_Events->push_back("h_Event_nJets");
 	list_Events->push_back("h_Event_nJets_meas");
+	list_Events->push_back("h_Event_nJets_meas_no_nHCal");
 
 	list_Events->push_back("h_Event_xQ2");
 	list_Events->push_back("h_Event_yQ2");
@@ -97,6 +102,9 @@ Int_t drawHist() {
 
 	list_Events->push_back("h_Event_HCal_jets");
 	list_Events->push_back("h_Event_HCal_jets_meas");
+	list_Events->push_back("h_Event_HCal_jets_meas_no_nHCal");
+
+	list_Events->push_back("h_Event_HCal_jets_meas_full");
 
 	list_Events->push_back("h_Particle_eta_wE");
 
@@ -139,14 +147,35 @@ Int_t drawHist() {
 	list_Events_special->push_back("h_Event_JetMeas_AllHCal_y");
 
 
-/*
-	// MC particles
-	list_MCpart->push_back("h_MCpart_mass");
-	list_MCpart->push_back("h_MCpart_charge");
-	list_MCpart->push_back("h_MCpart_E");
-	list_MCpart->push_back("h_MCpart_p");
-	list_MCpart->push_back("h_MCpart_pT");
-*/
+	// Outgoing partons
+	list_Partons->push_back("h_Partons_status");
+	list_Partons->push_back("h_Partons_types");
+	list_Partons->push_back("h_Partons_types_anti");
+
+	list_Partons->push_back("h_Partons_eta");
+	list_Partons->push_back("h_Partons_p");
+	list_Partons->push_back("h_Partons_pT");
+
+	list_Partons->push_back("h_Parton_eta_p");
+	list_Partons->push_back("h_Parton_eta_pT");
+	list_Partons->push_back("h_Parton_eta_E");
+
+	list_Partons->push_back("h_Parton_x_eta");
+	list_Partons->push_back("h_Parton_y_eta");
+	list_Partons->push_back("h_Parton_x_eta1");
+	list_Partons->push_back("h_Parton_y_eta1");
+	list_Partons->push_back("h_Parton_x_eta2");
+	list_Partons->push_back("h_Parton_y_eta2");
+
+
+
+	// Particles
+	list_Particle->push_back("h_Particle_eta");
+
+	list_Particle->push_back("h_Particle_eta_p");
+	list_Particle->push_back("h_Particle_eta_pT");
+	list_Particle->push_back("h_Particle_eta_E");
+
 
 	// eta, momentum
 	list_Particle->push_back("h_Particle_pion_p_eta_p");
@@ -198,11 +227,16 @@ Int_t drawHist() {
 	list_Jets->push_back("h_Jet_eta");
 	list_Jets->push_back("h_Jet_deta");
 
+	list_Jets->push_back("h_Jets_eta");
+	list_Jets->push_back("h_Jets_p");
+	list_Jets->push_back("h_Jets_pT");
+	list_Jets->push_back("h_Jets_E");
+
 	list_Jets->push_back("h_Jet_bHCal_part_eta");
 	list_Jets->push_back("h_Jet_HCal_part_eta");
 
 
-	// Jets
+	// Jets measured
 	list_Jets_meas->push_back("h_Jet_meas_nPart");
 	list_Jets_meas->push_back("h_Jet_meas_mass");
 	list_Jets_meas->push_back("h_Jet_meas_charge");
@@ -212,8 +246,40 @@ Int_t drawHist() {
 	list_Jets_meas->push_back("h_Jet_meas_eta");
 	list_Jets_meas->push_back("h_Jet_meas_deta");
 
+	list_Jets_meas->push_back("h_Jets_meas_eta");
+	list_Jets_meas->push_back("h_Jets_meas_p");
+	list_Jets_meas->push_back("h_Jets_meas_pT");
+	list_Jets_meas->push_back("h_Jets_meas_E");
+
 	list_Jets_meas->push_back("h_Jet_meas_bHCal_part_eta");
 	list_Jets_meas->push_back("h_Jet_meas_HCal_part_eta");
+
+
+	// Jets measured
+	list_Jets_meas_no_nHCal->push_back("h_Jet_meas_no_nHCal_nPart");
+	list_Jets_meas_no_nHCal->push_back("h_Jet_meas_no_nHCal_mass");
+	list_Jets_meas_no_nHCal->push_back("h_Jet_meas_no_nHCal_charge");
+	list_Jets_meas_no_nHCal->push_back("h_Jet_meas_no_nHCal_E");
+	list_Jets_meas_no_nHCal->push_back("h_Jet_meas_no_nHCal_p");
+	list_Jets_meas_no_nHCal->push_back("h_Jet_meas_no_nHCal_pT");
+	list_Jets_meas_no_nHCal->push_back("h_Jet_meas_no_nHCal_eta");
+	list_Jets_meas_no_nHCal->push_back("h_Jet_meas_no_nHCal_deta");
+
+	list_Jets_meas_no_nHCal->push_back("h_Jets_meas_no_nHCal_eta");
+	list_Jets_meas_no_nHCal->push_back("h_Jets_meas_no_nHCal_p");
+	list_Jets_meas_no_nHCal->push_back("h_Jets_meas_no_nHCal_pT");
+	list_Jets_meas_no_nHCal->push_back("h_Jets_meas_no_nHCal_E");
+
+
+	// measured jets vs. partons
+	list_Jets_Partons->push_back("h_Jets_meas_Partons_eta");
+	list_Jets_Partons->push_back("h_Jets_meas_Partons_E");
+
+	list_Jets_Partons->push_back("h_Jet_meas_Parton_eta1");
+	list_Jets_Partons->push_back("h_Jet_meas_Parton_E1");
+	list_Jets_Partons->push_back("h_Jet_meas_Parton_eta2");
+	list_Jets_Partons->push_back("h_Jet_meas_Parton_E2");
+
 
 	//TCanvas *cnv = new TCanvas();
 	//cnv->cd();
@@ -226,9 +292,12 @@ Int_t drawHist() {
 	//gSystem->cd("../");
 
 	gSystem->mkdir("output/Events/");
+	gSystem->mkdir("output/Partons/");
 	gSystem->mkdir("output/Particles/");
 	gSystem->mkdir("output/Jets/");
 	gSystem->mkdir("output/Jets_meas/");
+	gSystem->mkdir("output/Jets_meas_no_nHCal/");
+	gSystem->mkdir("output/Jets_meas_partons/");
 
 	//delete cnv;
 	//file->Close();
@@ -243,11 +312,17 @@ Int_t drawHist() {
 	gSystem->cd("../");
 	drawAny("output/Events/", file, list_Events_special);
 	gSystem->cd("../");
+	drawAny("output/Partons/", file, list_Partons);
+	gSystem->cd("../");
 	drawAny("output/Particles/", file, list_Particle);
 	gSystem->cd("../");
 	drawAny("output/Jets/", file, list_Jets);
 	gSystem->cd("../");
 	drawAny("output/Jets_meas/", file, list_Jets_meas);
+	gSystem->cd("../");
+	drawAny("output/Jets_meas_no_nHCal/", file, list_Jets_meas_no_nHCal);
+	gSystem->cd("../");
+	drawAny("output/Jets_meas_partons/", file, list_Jets_Partons);
 	gSystem->cd("../");
 
 

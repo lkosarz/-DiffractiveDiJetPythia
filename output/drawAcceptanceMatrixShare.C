@@ -36,7 +36,7 @@ using namespace std;
 
 
 /////////////////////////////////////////////////////////////
-void drawAcceptanceMatrix(TString infile = "data/diffractiveDiJets_ep_18x275GeV_ee_genkT_full.root", TString mkdir = "Acceptance", TString outfile = "AcceptanceMatrix.root") {
+void drawAcceptanceMatrixShare(TString infile = "data/diffractiveDiJets_ep_18x275GeV_ee_genkT_full.root", TString mkdir = "Acceptance", TString outfile = "AcceptanceMatrixShare.root") {
 
 	style();
 	gStyle->SetOptStat(0);
@@ -59,13 +59,13 @@ void drawAcceptanceMatrix(TString infile = "data/diffractiveDiJets_ep_18x275GeV_
 
 	TFile *file = TFile::Open(infile);
 
-	TCanvas *cnv = new TCanvas("cnv_jets", "Jets in HCals Matrix", nPadX*padw, nPadY*padh);
-	TCanvas *cnv_meas = new TCanvas("cnv_jets_meas", "Jets measured in HCals Matrix", nPadX*padw, nPadY*padh);
+	TCanvas *cnv = new TCanvas("cnv_jets", "Jets in HCals Matrix Share", nPadX*padw, nPadY*padh);
+	TCanvas *cnv_meas = new TCanvas("cnv_jets_meas", "Jets measured in HCals Matrix Share", nPadX*padw, nPadY*padh);
 	cnv->Divide(nPadX,nPadY);
 	cnv_meas->Divide(nPadX,nPadY);
 
-	TH2D *hist = (TH2D *)file->Get("h_Event_HCal_jets");
-	TH2D *hist_meas = (TH2D *)file->Get("h_Event_HCal_jets_meas");
+	TH2D *hist = (TH2D *)file->Get("h_Event_HCal_jets_meas");
+	TH2D *hist_meas = (TH2D *)file->Get("h_Event_HCal_jets_meas_full");
 	TH1D *histEvents = (TH1D *)file->Get("h_Events_types");
 
 	//double nEvents = histEvents->GetEntries();
@@ -100,11 +100,11 @@ void drawAcceptanceMatrix(TString infile = "data/diffractiveDiJets_ep_18x275GeV_
 	cnv_meas->cd(2)->SetLogz();
 	hist_meas->Draw("colzTEXT");
 
-	cnv->cd(1)->SaveAs("AcceptanceMatrix.png");
-	cnv->cd(2)->SaveAs("AcceptanceMatrix_log.png");
+	//cnv->cd(1)->SaveAs("AcceptanceMatrixShare.png");
+	//cnv->cd(2)->SaveAs("AcceptanceMatrixShare_log.png");
 
-	cnv_meas->cd(1)->SaveAs("AcceptanceMatrix_meas.png");
-	cnv_meas->cd(2)->SaveAs("AcceptanceMatrix_meas_log.png");
+	cnv_meas->cd(1)->SaveAs("AcceptanceMatrixShare_meas.png");
+	cnv_meas->cd(2)->SaveAs("AcceptanceMatrixShare_meas_log.png");
 
 	//--------------------------------------------
 

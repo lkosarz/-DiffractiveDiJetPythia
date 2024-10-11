@@ -5,6 +5,7 @@
 #include "Pythia8/Pythia.h"
 #include "TTree.h"
 #include "TFile.h"
+#include "TMath.h"
 
 #include <vector>
 #include <utility>
@@ -30,6 +31,9 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree =
                                          // stores data in tuple)
 int findFinalElectron(const Event& event);
 
+void FindPartonJet(vector<fastjet::PseudoJet> jets, Particle parton1, Particle parton2, int &jetid1, int &jetid2);
+double dR(fastjet::PseudoJet jet, Particle parton);
+
 int isInHcals(Particle part);
 int isInHcals(double eta);
 bool isInTracker(double eta);
@@ -37,6 +41,7 @@ bool isInTracker(double eta);
 
 int FillHCals(TH2F *hist, TH1F *hEne, TH1F *hEneDenom, bool &anyHcal_jets);
 int FillHCalsJets(TH2F *hist, vector<fastjet::PseudoJet> jets);
+int FillHCalsJetsShare(TH2F *hist, vector<fastjet::PseudoJet> jets);
 
 void SortPairs(std::vector<pair<int, double>> &input, std::vector<pair<int, double>> &output);
 
@@ -234,6 +239,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
 	vector<fastjet::PseudoJet> input_particles;
 	vector<fastjet::PseudoJet> input_particles_meas;
+	vector<fastjet::PseudoJet> input_particles_meas_no_nHCal;
 
 	float EsumF = 0.0;
 	double EsumD = 0.0;
@@ -241,6 +247,14 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	bool has_nHcalActivity = false;
 
 	int nPartFinal = 0;
+	int nPartonsOut = 0;
+	int iParton_1 = 0;
+	int iParton_2 = 0;
+
+	bool Parton_1_inAcc = false;
+	bool Parton_2_inAcc = false;
+
+	int nJetsInAcc = 0;
 
 	int nPion_p = 0;
 	int nPion_n = 0;
@@ -254,15 +268,75 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	int nNeutron = 0;
 	int nGamma = 0;
 
-    int njpsi = 0;
+
+    // Four-momenta of proton, electron, virtual photon/Z^0/W^+-.
+    Vec4 pProton = event[1].p();
+    Vec4 peIn    = event[2].p();
+    Vec4 pPhoton = event[4].p();
+
+    //Vec4 peIn    = event[4].p();
+    //Vec4 peOut   = event[6].p();
+    //Vec4 pPhoton = peIn - peOut;
+
+    // Q2, W2, Bjorken x, y.
+    double Q2    = - pPhoton.m2Calc();
+    double W2    = (pProton + pPhoton).m2Calc();
+    double x     = Q2 / (2. * pProton * pPhoton);
+    double y     = (pProton * pPhoton) / (pProton * peIn);
+
+
     for (int i = 0; i < event.size(); i++) {
 
     	Particle part = event[i];
 
+		 // count outgoing partons
+		if(part.status()==-23 || part.status()==-24)
+		{
+			nPartonsOut++;
+
+			h_Partons_status->Fill(part.status());
+
+			h_Parton_eta_p->Fill(part.eta(), part.pAbs());
+			h_Parton_eta_pT->Fill(part.eta(), part.pT());
+			h_Parton_eta_E->Fill(part.eta(), part.e());
+
+			if(nPartonsOut == 1) iParton_1 = i;
+			if(nPartonsOut == 2) iParton_2 = i;
+
+			if(part.id()>0) h_Partons_types->Fill(part.id());
+			if(part.id()<0) h_Partons_types_anti->Fill(abs(part.id()));
+
+			if((part.eta()>=-4.14 && part.eta()<=4.2) && nPartonsOut == 1) Parton_1_inAcc = true;
+			if((part.eta()>=-4.14 && part.eta()<=4.2) && nPartonsOut == 2) Parton_2_inAcc = true;
+		}
+
+		if(nPartonsOut == 2)
+		{
+			h_Partons_eta->Fill(event[iParton_1].eta(), event[iParton_2].eta());
+			h_Partons_p->Fill(event[iParton_1].pAbs(), event[iParton_2].pAbs());
+			h_Partons_pT->Fill(event[iParton_1].pT(), event[iParton_2].pT());
+
+			h_Parton_x_eta->Fill(x, event[iParton_1].eta());
+			h_Parton_x_eta->Fill(x, event[iParton_2].eta());
+
+			h_Parton_y_eta->Fill(y, event[iParton_1].eta());
+			h_Parton_y_eta->Fill(y, event[iParton_2].eta());
+
+			h_Parton_x_eta1->Fill(x, event[iParton_1].eta());
+			h_Parton_x_eta2->Fill(x, event[iParton_2].eta());
+
+			h_Parton_y_eta1->Fill(y, event[iParton_1].eta());
+			h_Parton_y_eta2->Fill(y, event[iParton_2].eta());
+		}
+
     	// accept final particles only
     	if(!part.isFinal()) continue;
+    	// ePIC acceptance only
+		if(part.eta()<-4.14 ||  part.eta()>4.2)	continue;
+		if(!(11>part.status() || part.status()>19))	continue; // exclude beam particles
 
     	nPartFinal++;
+
 
 		if(part.id() == 211) nPion_p++;
 		if(part.id() == -211) nPion_n++;
@@ -342,6 +416,19 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 				//cout<<"input_particles_meas add neutral = "<<i<<endl;
 			}
 
+			bool isIn_nHCal = -4.14<part.eta() && part.eta()<-1.18;
+
+			if(part.isCharged() && isInTracker(part.eta()))
+			{
+				input_particles_meas_no_nHCal.push_back(fastjet::PseudoJet(part.px(),part.py(),part.pz(),part.e()));
+				//cout<<"input_particles_meas_no_nHCal add charged = "<<i<<endl;
+			}
+			if(part.isNeutral() && !isIn_nHCal)
+			{
+				input_particles_meas_no_nHCal.push_back(fastjet::PseudoJet(part.px(),part.py(),part.pz(),part.e()));
+				//cout<<"input_particles_meas_no_nHCal add neutral = "<<i<<endl;
+			}
+
 		}
 
 
@@ -408,14 +495,20 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
     //----------------------------------------------------------
     fastjet::ClusterSequence clust_seq(input_particles, jet_def);
     fastjet::ClusterSequence clust_seq_meas(input_particles_meas, jet_def);
+    fastjet::ClusterSequence clust_seq_meas_no_nHCal(input_particles_meas_no_nHCal, jet_def);
 
 
     // get the resulting jets ordered in pt
     //----------------------------------------------------------
     double ptmin = 0.0; // 5.0 [GeV/c]
     double Emin = 4.0; // 5.0 [GeV/c]
+    vector<fastjet::PseudoJet> inclusive_jets_unsorted;
+    vector<fastjet::PseudoJet> measured_jets_unsorted;
+    vector<fastjet::PseudoJet> measured_jets_no_nHCal_unsorted;
+
     vector<fastjet::PseudoJet> inclusive_jets;
     vector<fastjet::PseudoJet> measured_jets;
+    vector<fastjet::PseudoJet> measured_jets_no_nHCal;
 
     //vector<fastjet::PseudoJet> inclusive_jets = sorted_by_pt(clust_seq.inclusive_jets(ptmin));
     //inclusive_jets = sorted_by_E(clust_seq.inclusive_jets(ptmin));
@@ -423,15 +516,19 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
     vector<fastjet::PseudoJet> inclusive_jets_precut = sorted_by_E(clust_seq.inclusive_jets(ptmin));
     vector<fastjet::PseudoJet> measured_jets_precut = sorted_by_E(clust_seq_meas.inclusive_jets(ptmin));
+    vector<fastjet::PseudoJet> measured_jets_no_nHCal_precut = sorted_by_E(clust_seq_meas_no_nHCal.inclusive_jets(ptmin));
 
 
+    // apply energy cut
     for (int i = 0; i < inclusive_jets_precut.size(); ++i)
     {
 		fastjet::PseudoJet jet = inclusive_jets_precut[i];
 
 		if(jet.E()<Emin) continue;
 
-    	inclusive_jets.push_back(jet);
+		if(jet.eta()>=-4.14 &&  jet.eta()<=4.2) nJetsInAcc++;
+
+		inclusive_jets_unsorted.push_back(jet);
 	}
 
     for (int i = 0; i < measured_jets_precut.size(); ++i)
@@ -440,29 +537,38 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
 		if(jet.E()<Emin) continue;
 
-		measured_jets.push_back(jet);
+		measured_jets_unsorted.push_back(jet);
 	}
+
+    for (int i = 0; i < measured_jets_no_nHCal_precut.size(); ++i)
+    {
+		fastjet::PseudoJet jet = measured_jets_no_nHCal_precut[i];
+
+		if(jet.E()<Emin) continue;
+
+		measured_jets_no_nHCal_unsorted.push_back(jet);
+	}
+
+    // sort jets vs. energy
+
+    inclusive_jets = sorted_by_E(inclusive_jets_unsorted);
+    measured_jets = sorted_by_E(measured_jets_unsorted);
+    measured_jets_no_nHCal = sorted_by_E(measured_jets_no_nHCal_unsorted);
 
 	//cout<<"inclusive_jets size = "<<inclusive_jets.size()<<endl;
 	//cout<<"measured_jets size = "<<measured_jets.size()<<endl;
 
 
-    // Four-momenta of proton, electron, virtual photon/Z^0/W^+-.
-    Vec4 pProton = event[1].p();
-    Vec4 peIn    = event[2].p();
-    Vec4 pPhoton = event[4].p();
+    h_Events->Fill(0);
 
-    //Vec4 peIn    = event[4].p();
-    //Vec4 peOut   = event[6].p();
-    //Vec4 pPhoton = peIn - peOut;
+    h_Events_types->Fill(0);
+    if((Parton_1_inAcc && !Parton_2_inAcc) || (Parton_2_inAcc && !Parton_1_inAcc)) h_Events_types->Fill(1);
+    if(Parton_1_inAcc && Parton_2_inAcc) h_Events_types->Fill(2);
+    if(nJetsInAcc == 1) h_Events_types->Fill(3);
+    if(nJetsInAcc == 2) h_Events_types->Fill(4);
+    if(nJetsInAcc >= 2) h_Events_types->Fill(5);
 
-    // Q2, W2, Bjorken x, y.
-    double Q2    = - pPhoton.m2Calc();
-    double W2    = (pProton + pPhoton).m2Calc();
-    double x     = Q2 / (2. * pProton * pPhoton);
-    double y     = (pProton * pPhoton) / (pProton * peIn);
-
-    h_Events->Fill(1);
+    h_Events_nPartonsOut->Fill(nPartonsOut);
 
 	// Store event
     if(writeTree)
@@ -503,10 +609,12 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
 	h_Event_nJets->Fill(inclusive_jets.size());
 	h_Event_nJets_meas->Fill(measured_jets.size());
+	h_Event_nJets_meas_no_nHCal->Fill(measured_jets_no_nHCal.size());
 
 	// summary
 	bool anyHcal_jets = false;
 	bool anyHcal_jets_meas = false;
+	bool anyHcal_jets_meas_no_nHCal = false;
 	bool bHCalJet = false;
 	bool bHCalJet_meas = false;
 	int nHCal_jets = 0;
@@ -515,6 +623,9 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	//int nHCal_jets = FillHCals(h_Event_HCal_jets, hist_eta_energy_tmp, hist_eta_energy_denom_tmp, anyHcal_jets);
 	FillHCalsJets(h_Event_HCal_jets, inclusive_jets);
 	FillHCalsJets(h_Event_HCal_jets_meas, measured_jets);
+	FillHCalsJets(h_Event_HCal_jets_meas_no_nHCal, measured_jets_no_nHCal);
+
+	FillHCalsJetsShare(h_Event_HCal_jets_meas_full, measured_jets);
 
 
 	for (unsigned int i = 0; i < inclusive_jets.size(); i++) {
@@ -558,7 +669,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		h_Jet_eta->Fill(jet.eta());
 
 
-		for (unsigned int j = 0; j < inclusive_jets.size(); j++) {
+		for (unsigned int j = i; j < inclusive_jets.size(); j++) {
 
 			if(i==j) continue;
 
@@ -575,7 +686,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 			h_Jet_HCal_part_eta->Fill(constituents[j].eta(), HCal_id);
 		}
 
-	}
+	} // inclusive_jets
 
 	for (unsigned int i = 0; i < measured_jets.size(); i++) {
 
@@ -617,7 +728,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		h_Jet_meas_pT->Fill(jet.pt());
 		h_Jet_meas_eta->Fill(jet.eta());
 
-		for (unsigned int j = 0; j < measured_jets.size(); j++) {
+		for (unsigned int j = i; j < measured_jets.size(); j++) {
 
 			if(i==j) continue;
 
@@ -634,7 +745,133 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 			if(bHCalJet) h_Jet_meas_bHCal_part_eta->Fill(measured_constituents[j].eta());
 			h_Jet_meas_HCal_part_eta->Fill(measured_constituents[j].eta(), HCal_meas_id);
 		}
+	} // meas_jets
+
+
+
+	for (unsigned int i = 0; i < measured_jets_no_nHCal.size(); i++) {
+
+		fastjet::PseudoJet jet = measured_jets_no_nHCal[i];
+
+		//int HCal_meas_id = 0; // none = 0, nHCal = 1, bHCal = 2, LFHCAL = 3
+/*
+		// nHCal
+		if(-4.14 < jet.eta() && jet.eta() < -1.18)
+		{
+			anyHcal_jets_meas = true;
+			nHCal_jets_meas++;
+			HCal_meas_id = 1;
+		}*/
+
+		// bHCal
+		if(-1.1 < jet.eta() && jet.eta() < 1.1)
+		{
+			anyHcal_jets_meas_no_nHCal = true;
+			//bHCalJet_meas = true;
+			//HCal_meas_id = 2;
+		}
+
+		// LFHCal
+		if(1.2 < jet.eta() && jet.eta() < 4.2)
+		{
+			anyHcal_jets_meas_no_nHCal = true;
+			//HCal_meas_id = 3;
+		}
+
+
+		double jet_p = sqrt(jet.pt2()+jet.pz());
+
+		h_Jet_meas_no_nHCal_nPart->Fill(jet.constituents().size());
+		h_Jet_meas_no_nHCal_mass->Fill(jet.m());
+	    //h_Jet_meas_no_nHCal_charge->Fill(jet.m());
+		h_Jet_meas_no_nHCal_E->Fill(jet.E());
+		h_Jet_meas_no_nHCal_p->Fill(jet_p);
+		h_Jet_meas_no_nHCal_pT->Fill(jet.pt());
+		h_Jet_meas_no_nHCal_eta->Fill(jet.eta());
+
+	} // measured_jets_no_nHCal
+
+
+
+
+	// jets ------------------
+
+	if(inclusive_jets.size() >= 2)
+	{
+
+		fastjet::PseudoJet jet1 = inclusive_jets[0];
+		fastjet::PseudoJet jet2 = inclusive_jets[1];
+
+		double jet1_p = sqrt(jet1.pt2()+jet1.pz());
+		double jet2_p = sqrt(jet2.pt2()+jet2.pz());
+
+		h_Jets_eta->Fill(jet1.eta(), jet2.eta());
+		h_Jets_p->Fill(jet1_p, jet2_p);
+		h_Jets_pT->Fill(jet1.pt(), jet2.pt());
+		h_Jets_E->Fill(jet1.E(), jet2.E());
 	}
+
+	if(measured_jets.size() >= 2)
+	{
+		h_Jets_meas_eta->Fill(measured_jets[0].eta(), measured_jets[1].eta());
+
+		fastjet::PseudoJet jet1 = measured_jets[0];
+		fastjet::PseudoJet jet2 = measured_jets[1];
+
+		double jet1_p = sqrt(jet1.pt2()+jet1.pz());
+		double jet2_p = sqrt(jet2.pt2()+jet2.pz());
+
+		h_Jets_meas_eta->Fill(jet1.eta(), jet2.eta());
+		h_Jets_meas_p->Fill(jet1_p, jet2_p);
+		h_Jets_meas_pT->Fill(jet1.pt(), jet2.pt());
+		h_Jets_meas_E->Fill(jet1.E(), jet2.E());
+	}
+
+	if(measured_jets_no_nHCal.size() >= 2)
+	{
+		h_Jets_meas_eta->Fill(measured_jets_no_nHCal[0].eta(), measured_jets_no_nHCal[1].eta());
+
+		fastjet::PseudoJet jet1 = measured_jets_no_nHCal[0];
+		fastjet::PseudoJet jet2 = measured_jets_no_nHCal[1];
+
+		double jet1_p = sqrt(jet1.pt2()+jet1.pz());
+		double jet2_p = sqrt(jet2.pt2()+jet2.pz());
+
+		h_Jets_meas_no_nHCal_eta->Fill(jet1.eta(), jet2.eta());
+		h_Jets_meas_no_nHCal_p->Fill(jet1_p, jet2_p);
+		h_Jets_meas_no_nHCal_pT->Fill(jet1.pt(), jet2.pt());
+		h_Jets_meas_no_nHCal_E->Fill(jet1.E(), jet2.E());
+	}
+
+
+
+	// measured jets vs. partons
+
+	int jetid1 = -1;
+	int jetid2 = -1;
+
+	FindPartonJet(measured_jets, event[iParton_1], event[iParton_2], jetid1, jetid2);
+
+	if(jetid1 >= 0)
+	{
+		h_Jets_meas_Partons_eta->Fill(event[iParton_1].eta(), measured_jets[jetid1].eta());
+		h_Jets_meas_Partons_E->Fill(event[iParton_1].e(), measured_jets[jetid1].E());
+
+		h_Jet_meas_Parton_eta1->Fill(event[iParton_1].eta(), measured_jets[jetid1].eta());
+		h_Jet_meas_Parton_E1->Fill(event[iParton_1].e(), measured_jets[jetid1].E());
+	}
+
+	if(jetid2 >= 0)
+	{
+		h_Jets_meas_Partons_eta->Fill(event[iParton_2].eta(), measured_jets[jetid2].eta());
+		h_Jets_meas_Partons_E->Fill(event[iParton_2].e(), measured_jets[jetid2].E());
+
+		h_Jet_meas_Parton_eta1->Fill(event[iParton_2].eta(), measured_jets[jetid2].eta());
+		h_Jet_meas_Parton_E1->Fill(event[iParton_2].e(), measured_jets[jetid2].E());
+	}
+
+
+	// events -----------------
 
 
 	h_Event_Q2->Fill(Q2);
@@ -709,6 +946,15 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		h_Event_JetMeas_AllHCal_x->Fill(x);
 		h_Event_JetMeas_AllHCal_y->Fill(y);
 	}
+
+
+	if(anyHcal_jets_meas_no_nHCal) // Jets in any HCal, no nHCal
+	{
+		h_Event_JetMeas_no_nHCal_Q2->Fill(Q2);
+		h_Event_JetMeas_no_nHCal_x->Fill(x);
+		h_Event_JetMeas_no_nHCal_y->Fill(y);
+	}
+
 
 
 	// tell the user what was done
@@ -947,6 +1193,108 @@ int FillHCalsJets(TH2F *hist, vector<fastjet::PseudoJet> jets)
 }
 
 
+int FillHCalsJetsShare(TH2F *hist, vector<fastjet::PseudoJet> jets)
+{
+
+
+	bool anyHcal_jets = false;
+	int nHCal_jets = 0;
+	int a = -1;
+	int b = -1;
+
+	bool is_nHCal = false;
+	bool is_bHCal = false;
+	bool is_LFHCal = false;
+
+	for (unsigned int i = 0; i < jets.size(); i++) {
+
+		fastjet::PseudoJet jet = jets[i];
+
+		vector<PseudoJet> constituents = jet.constituents();
+
+		for (int j = 0; j < constituents.size(); ++j) {
+
+			fastjet::PseudoJet con = constituents[j];
+
+			if(-4.14 < con.eta() && con.eta() < -1.18) is_nHCal = true;
+			if(-1.1 < con.eta() && con.eta() < 1.1) is_bHCal = true;
+			if(1.2 < con.eta() && con.eta() < 4.2) is_LFHCal = true;
+		}
+
+
+		//----------
+
+		// nHCal
+		if(is_nHCal && !is_bHCal && !is_LFHCal)
+		{
+			if(i==0) a = 0;
+			if(i==1) b = 0;
+		}
+
+		// nHCal+bHCal
+		if(is_nHCal && is_bHCal && !is_LFHCal)
+		{
+			if(i==0) a = 1;
+			if(i==1) b = 1;
+		}
+
+		// bHCal
+		if(!is_nHCal && is_bHCal && !is_LFHCal)
+		{
+			if(i==0) a = 2;
+			if(i==1) b = 2;
+		}
+
+		// bHCal+LFHCal
+		if(!is_nHCal && is_bHCal && is_LFHCal)
+		{
+			if(i==0) a = 3;
+			if(i==1) b = 3;
+		}
+
+		// LFHCal
+		if(!is_nHCal && !is_bHCal && is_LFHCal)
+		{
+			if(i==0) a = 4;
+			if(i==1) b = 4;
+		}
+
+	}
+
+	hist->Fill(a, b);
+
+	if(b >= 0)
+	{
+		hist->Fill(a, 5);
+	}
+	if(a >= 0)
+	{
+		hist->Fill(5, b);
+	}
+	if(a >= 0 && b >= 0)
+	{
+		hist->Fill(5, 5);
+	}
+
+	//cout<<"a ="<<a<<endl;
+	//cout<<"b ="<<b<<endl;
+
+	if(a >= 0 && b >= 0 )
+	{
+		anyHcal_jets = true;
+		//cout<<"Both jets in any HCal"<<endl;
+	}
+
+	//if(a == 0 && b == 0) return 2; // 2 jets in nHCal
+	//if(a == 0 || b == 0) return 1; // 1 jet in nHCal
+	//if(a != 0 && b != 0) return 0; // 0 jet in nHCal
+	//if(a == 3 && b == 3) return 3; // jets in any HCal
+
+	return -1;
+
+}
+
+
 void SortPairs(std::vector<pair<int, double>> &input, std::vector<pair<int, double>> &output)
 {
 
@@ -1047,4 +1395,52 @@ bool isInTracker(double eta)
 	}
 
 	return false;
+}
+
+
+void FindPartonJet(vector<fastjet::PseudoJet> jets, Particle parton1, Particle parton2, int &jetid1, int &jetid2)
+{
+
+	double r1_min = 1.0;
+	double r2_min = 1.0;
+
+	int id1_min = -1;
+	int id2_min = -1;
+
+	for (int i = 0; i < jets.size(); ++i) {
+
+		fastjet::PseudoJet jet = jets[i];
+
+		double r1 = dR(jet, parton1);
+		double r2 = dR(jet, parton2);
+
+		if(r1<r1_min)
+		{
+			r1_min = r1;
+			id1_min = i;
+		}
+		if(r2<r2_min)
+		{
+			r2_min = r2;
+			id2_min = i;
+		}
+
+	} // jets
+
+	jetid1 = id1_min;
+	jetid2 = id2_min;
+
+	//cout<<"jetid1 = "<<jetid1<<endl;
+	//cout<<"jetid2 = "<<jetid2<<endl;
+
+}
+
+
+double dR(fastjet::PseudoJet jet, Particle parton)
+{
+
+	double d1sq = TMath::Power(jet.eta()-parton.eta(), 2.0);
+	d1sq += TMath::Power(jet.phi()-parton.phi(), 2.0);
+
+	return TMath::Sqrt(d1sq);
 }

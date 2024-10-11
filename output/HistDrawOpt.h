@@ -28,8 +28,24 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 		//drawOpt = "e";
 		//logScale=kTRUE;
 	}
+	if(!name.CompareTo("h_Events_types")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "eTEXT45";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		//logScale=kTRUE;
+	}
 
 	if(!name.CompareTo("h_Events_Diffractive")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		//logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Events_nPartonsOut")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
 		//objH1->GetXaxis()->SetRangeUser(0.0, 1.0);
@@ -250,6 +266,34 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 	}
 
 	if(!name.CompareTo("h_Event_HCal_jets_meas")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colzTEXT";
+		objH2->SetStats(false);
+		objH2->SetMarkerSize(1.8);
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+
+	if(!name.CompareTo("h_Event_HCal_jets_meas_no_nHCal")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colzTEXT";
+		objH2->SetStats(false);
+		objH2->SetMarkerSize(1.8);
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+
+	if(!name.CompareTo("h_Event_HCal_jets_meas_full")) {
 		TH2 *objH2 = dynamic_cast<TH2*>(obj);
 		drawOpt = "colzTEXT";
 		objH2->SetStats(false);
@@ -507,8 +551,169 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 		logScale=kTRUE;
 	}
 
+	if(!name.CompareTo("h_Partons_status")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 24.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Partons_types")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		objH1->GetXaxis()->SetRangeUser(0.0, 24.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Partons_types_anti")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		objH1->GetXaxis()->SetRangeUser(0.0, 24.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
 
-	if(!name.CompareTo("h_Jet_nPart")) {
+	if(!name.CompareTo("h_Partons_eta")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Partons_p")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Partons_pT")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+
+	if(!name.CompareTo("h_Parton_eta_p")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Parton_eta_pT")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Parton_eta_E")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+
+
+	if(!name.CompareTo("h_Parton_x_eta")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kTRUE;
+	}
+	if(!name.CompareTo("h_Parton_y_eta")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Parton_x_eta1")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kTRUE;
+	}
+	if(!name.CompareTo("h_Parton_y_eta1")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Parton_x_eta2")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kTRUE;
+	}
+	if(!name.CompareTo("h_Parton_y_eta2")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+
+
+	if(!name.CompareTo("h_Particle_eta")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
 		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
@@ -516,10 +721,54 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 		//drawOpt = "e";
 		logScale=kTRUE;
 	}
+
+	if(!name.CompareTo("h_Particle_eta_p")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		objH2->GetYaxis()->SetRangeUser(0.0, 20.0);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Particle_eta_pT")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		objH2->GetYaxis()->SetRangeUser(0.0, 20.0);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Particle_eta_E")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		objH2->GetYaxis()->SetRangeUser(0.0, 20.0);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+
+
+	if(!name.CompareTo("h_Jet_nPart")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		objH1->GetXaxis()->SetRangeUser(0.0, 30.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
 	if(!name.CompareTo("h_Jet_mass")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
-		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
 		//objH1->RebinX(16);
 		//drawOpt = "e";
 		logScale=kTRUE;
@@ -535,7 +784,7 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 	if(!name.CompareTo("h_Jet_E")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
-		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
 		//objH1->RebinX(16);
 		//drawOpt = "e";
 		logScale=kTRUE;
@@ -543,7 +792,7 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 	if(!name.CompareTo("h_Jet_p")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
-		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
 		//objH1->RebinX(16);
 		//drawOpt = "e";
 		logScale=kTRUE;
@@ -551,7 +800,7 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 	if(!name.CompareTo("h_Jet_pT")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
-		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
 		//objH1->RebinX(16);
 		//drawOpt = "e";
 		logScale=kTRUE;
@@ -574,11 +823,55 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 	}
 
 
+	if(!name.CompareTo("h_Jets_eta")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Jets_p")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Jets_pT")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Jets_E")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
 
 	if(!name.CompareTo("h_Jet_meas_nPart")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
-		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		objH1->GetXaxis()->SetRangeUser(0.0, 30.0);
 		//objH1->RebinX(16);
 		//drawOpt = "e";
 		logScale=kTRUE;
@@ -586,7 +879,7 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 	if(!name.CompareTo("h_Jet_meas_mass")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
-		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
 		//objH1->RebinX(16);
 		//drawOpt = "e";
 		logScale=kTRUE;
@@ -602,7 +895,7 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 	if(!name.CompareTo("h_Jet_meas_E")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
-		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
 		//objH1->RebinX(16);
 		//drawOpt = "e";
 		logScale=kTRUE;
@@ -610,7 +903,7 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 	if(!name.CompareTo("h_Jet_meas_p")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
-		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
 		//objH1->RebinX(16);
 		//drawOpt = "e";
 		logScale=kTRUE;
@@ -618,7 +911,7 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 	if(!name.CompareTo("h_Jet_meas_pT")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";
-		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
 		//objH1->RebinX(16);
 		//drawOpt = "e";
 		logScale=kTRUE;
@@ -638,6 +931,52 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 		//objH1->RebinX(16);
 		//drawOpt = "e";
 		logScale=kTRUE;
+	}
+
+
+	if(!name.CompareTo("h_Jets_meas_eta")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Jets_meas_p")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Jets_meas_pT")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Jets_meas_E")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
 	}
 
 
@@ -682,6 +1021,121 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 		logScaleX=kFALSE;
 	}
 
+
+
+
+	// Jets measured
+
+	if(!name.CompareTo("h_Jet_meas_no_nHCal_nPart")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		objH1->GetXaxis()->SetRangeUser(0.0, 30.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_meas_no_nHCal_mass")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_meas_no_nHCal_charge")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_meas_no_nHCal_E")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_meas_no_nHCal_p")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_meas_no_nHCal_pT")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		objH1->GetXaxis()->SetRangeUser(0.0, 20.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_meas_no_nHCal_eta")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_Jet_meas_no_nHCal_deta")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.1);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		logScale=kTRUE;
+	}
+
+
+	if(!name.CompareTo("h_Jets_meas_no_nHCal_eta")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Jets_meas_no_nHCal_p")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Jets_meas_no_nHCal_pT")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
+	if(!name.CompareTo("h_Jets_meas_no_nHCal_E")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		//objH2->GetXaxis()->SetRangeUser(-TMath::Pi(), TMath::Pi());
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		logScaleX=kFALSE;
+	}
 
 /*
 	if(!name.CompareTo("NtracksBvsF")) {
