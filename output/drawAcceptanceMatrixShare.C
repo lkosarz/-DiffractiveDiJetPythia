@@ -47,6 +47,9 @@ void drawAcceptanceMatrixShare(TString infile = "data/diffractiveDiJets_ep_18x27
 	const Int_t nPadX = 2;
 	const Int_t nPadY = 1;
 
+	//infile = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_full.root";
+	infile = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_pT4GeV_full.root";
+	//infile = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_E4GeV_full.root";
 
 	gSystem->MakeDirectory("output");
 	gSystem->cd("output");

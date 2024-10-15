@@ -54,6 +54,11 @@ void drawAcceptance_All(TString infile = "data/diffractiveDiJets_ep_18x275GeV_ee
 	const Int_t nPadX = 2;
 	const Int_t nPadY = 1;
 
+
+	//infile = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_full.root";
+	infile = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_pT4GeV_full.root";
+	//infile = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_E4GeV_full.root";
+
 	drawAcceptance_Q2(infile);
 	drawAcceptance_x(infile);
 	drawAcceptance_y(infile);

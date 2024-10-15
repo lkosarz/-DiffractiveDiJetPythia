@@ -306,7 +306,9 @@ Int_t drawHist() {
 	//file = "data/diffractiveDiJets_ep_18x275GeV_pT0GeV_full.root";
 	//file = "data/diffractiveDiJets_ep_18x275GeV_ee_kT_full.root";
 	//file = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_full.root";
-	file = "data/diffractiveDiJets_ep_18x275GeV_ee_genkT_full.root";
+	file = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_pT4GeV_full.root";
+	//file = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_E4GeV_full.root";
+	//file = "data/diffractiveDiJets_ep_18x275GeV_ee_genkT_full.root";
 
 	drawAny("output/Events/", file, list_Events);
 	gSystem->cd("../");

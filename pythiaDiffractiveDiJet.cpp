@@ -232,9 +232,9 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	//----------------------------------------------------------
 	double R = 1.0;
 	double p = -1.0;
-	//fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, R);
+	fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, R);
 	//fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm);
-	fastjet::JetDefinition jet_def(fastjet::ee_genkt_algorithm, R, p);
+	//fastjet::JetDefinition jet_def(fastjet::ee_genkt_algorithm, R, p);
 	//fastjet::JetDefinition jet_def_meas(fastjet::ee_kt_algorithm);
 
 	vector<fastjet::PseudoJet> input_particles;
@@ -500,8 +500,8 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 
     // get the resulting jets ordered in pt
     //----------------------------------------------------------
-    double ptmin = 0.0; // 5.0 [GeV/c]
-    double Emin = 4.0; // 5.0 [GeV/c]
+    double ptmin = 4.0; // 5.0 [GeV/c]
+    double Emin = 0.0; // 5.0 [GeV/c]
     vector<fastjet::PseudoJet> inclusive_jets_unsorted;
     vector<fastjet::PseudoJet> measured_jets_unsorted;
     vector<fastjet::PseudoJet> measured_jets_no_nHCal_unsorted;
@@ -550,10 +550,16 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	}
 
     // sort jets vs. energy
-
+/*
     inclusive_jets = sorted_by_E(inclusive_jets_unsorted);
     measured_jets = sorted_by_E(measured_jets_unsorted);
     measured_jets_no_nHCal = sorted_by_E(measured_jets_no_nHCal_unsorted);
+    */
+
+    // sort jets vs. pT
+    inclusive_jets = sorted_by_pt(inclusive_jets_unsorted);
+    measured_jets = sorted_by_pt(measured_jets_unsorted);
+    measured_jets_no_nHCal = sorted_by_pt(measured_jets_no_nHCal_unsorted);
 
 	//cout<<"inclusive_jets size = "<<inclusive_jets.size()<<endl;
 	//cout<<"measured_jets size = "<<measured_jets.size()<<endl;
@@ -866,8 +872,8 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		h_Jets_meas_Partons_eta->Fill(event[iParton_2].eta(), measured_jets[jetid2].eta());
 		h_Jets_meas_Partons_E->Fill(event[iParton_2].e(), measured_jets[jetid2].E());
 
-		h_Jet_meas_Parton_eta1->Fill(event[iParton_2].eta(), measured_jets[jetid2].eta());
-		h_Jet_meas_Parton_E1->Fill(event[iParton_2].e(), measured_jets[jetid2].E());
+		h_Jet_meas_Parton_eta2->Fill(event[iParton_2].eta(), measured_jets[jetid2].eta());
+		h_Jet_meas_Parton_E2->Fill(event[iParton_2].e(), measured_jets[jetid2].E());
 	}
 
 
@@ -1424,6 +1430,9 @@ void FindPartonJet(vector<fastjet::PseudoJet> jets, Particle parton1, Particle p
 			r2_min = r2;
 			id2_min = i;
 		}
+
+		//cout<<"r1_min = "<<r1_min<<"\tr1 = "<<r1<<endl;
+		//cout<<"r2_min = "<<r2_min<<"\tr2 = "<<r2<<endl;
 
 	} // jets
 
