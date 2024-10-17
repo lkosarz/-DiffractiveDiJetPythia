@@ -313,6 +313,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		if(nPartonsOut == 2)
 		{
 			h_Partons_eta->Fill(event[iParton_1].eta(), event[iParton_2].eta());
+			h_Partons_phi->Fill(event[iParton_1].phi(), event[iParton_2].phi());
 			h_Partons_p->Fill(event[iParton_1].pAbs(), event[iParton_2].pAbs());
 			h_Partons_pT->Fill(event[iParton_1].pT(), event[iParton_2].pT());
 
@@ -664,7 +665,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		}
 
 
-		double jet_p = sqrt(jet.pt2()+jet.pz());
+		double jet_p = sqrt(jet.pt2()+jet.pz()*jet.pz());
 
 		h_Jet_nPart->Fill(jet.constituents().size());
 		h_Jet_mass->Fill(jet.m());
@@ -724,7 +725,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		}
 
 
-		double jet_p = sqrt(jet.pt2()+jet.pz());
+		double jet_p = sqrt(jet.pt2()+jet.pz()*jet.pz());
 
 		h_Jet_meas_nPart->Fill(jet.constituents().size());
 		h_Jet_meas_mass->Fill(jet.m());
@@ -785,7 +786,7 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		}
 
 
-		double jet_p = sqrt(jet.pt2()+jet.pz());
+		double jet_p = sqrt(jet.pt2()+jet.pz()*jet.pz());
 
 		h_Jet_meas_no_nHCal_nPart->Fill(jet.constituents().size());
 		h_Jet_meas_no_nHCal_mass->Fill(jet.m());
@@ -808,10 +809,11 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		fastjet::PseudoJet jet1 = inclusive_jets[0];
 		fastjet::PseudoJet jet2 = inclusive_jets[1];
 
-		double jet1_p = sqrt(jet1.pt2()+jet1.pz());
-		double jet2_p = sqrt(jet2.pt2()+jet2.pz());
+		double jet1_p = sqrt(jet1.pt2()+jet1.pz()*jet1.pz());
+		double jet2_p = sqrt(jet2.pt2()+jet2.pz()*jet2.pz());
 
 		h_Jets_eta->Fill(jet1.eta(), jet2.eta());
+		h_Jets_phi->Fill(jet1.phi(), jet2.phi());
 		h_Jets_p->Fill(jet1_p, jet2_p);
 		h_Jets_pT->Fill(jet1.pt(), jet2.pt());
 		h_Jets_E->Fill(jet1.E(), jet2.E());
@@ -824,10 +826,11 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		fastjet::PseudoJet jet1 = measured_jets[0];
 		fastjet::PseudoJet jet2 = measured_jets[1];
 
-		double jet1_p = sqrt(jet1.pt2()+jet1.pz());
-		double jet2_p = sqrt(jet2.pt2()+jet2.pz());
+		double jet1_p = sqrt(jet1.pt2()+jet1.pz()*jet1.pz());
+		double jet2_p = sqrt(jet2.pt2()+jet2.pz()*jet2.pz());
 
 		h_Jets_meas_eta->Fill(jet1.eta(), jet2.eta());
+		h_Jets_meas_phi->Fill(jet1.phi(), jet2.phi());
 		h_Jets_meas_p->Fill(jet1_p, jet2_p);
 		h_Jets_meas_pT->Fill(jet1.pt(), jet2.pt());
 		h_Jets_meas_E->Fill(jet1.E(), jet2.E());
@@ -840,10 +843,11 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 		fastjet::PseudoJet jet1 = measured_jets_no_nHCal[0];
 		fastjet::PseudoJet jet2 = measured_jets_no_nHCal[1];
 
-		double jet1_p = sqrt(jet1.pt2()+jet1.pz());
-		double jet2_p = sqrt(jet2.pt2()+jet2.pz());
+		double jet1_p = sqrt(jet1.pt2()+jet1.pz()*jet1.pz());
+		double jet2_p = sqrt(jet2.pt2()+jet2.pz()*jet2.pz());
 
 		h_Jets_meas_no_nHCal_eta->Fill(jet1.eta(), jet2.eta());
+		h_Jets_meas_no_nHCal_phi->Fill(jet1.phi(), jet2.phi());
 		h_Jets_meas_no_nHCal_p->Fill(jet1_p, jet2_p);
 		h_Jets_meas_no_nHCal_pT->Fill(jet1.pt(), jet2.pt());
 		h_Jets_meas_no_nHCal_E->Fill(jet1.E(), jet2.E());
@@ -861,18 +865,22 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
 	if(jetid1 >= 0)
 	{
 		h_Jets_meas_Partons_eta->Fill(event[iParton_1].eta(), measured_jets[jetid1].eta());
+		h_Jets_meas_Partons_phi->Fill(event[iParton_1].phi(), measured_jets[jetid1].phi());
 		h_Jets_meas_Partons_E->Fill(event[iParton_1].e(), measured_jets[jetid1].E());
 
 		h_Jet_meas_Parton_eta1->Fill(event[iParton_1].eta(), measured_jets[jetid1].eta());
+		h_Jet_meas_Parton_phi1->Fill(event[iParton_1].phi(), measured_jets[jetid1].phi());
 		h_Jet_meas_Parton_E1->Fill(event[iParton_1].e(), measured_jets[jetid1].E());
 	}
 
 	if(jetid2 >= 0)
 	{
 		h_Jets_meas_Partons_eta->Fill(event[iParton_2].eta(), measured_jets[jetid2].eta());
+		h_Jets_meas_Partons_phi->Fill(event[iParton_2].phi(), measured_jets[jetid2].phi());
 		h_Jets_meas_Partons_E->Fill(event[iParton_2].e(), measured_jets[jetid2].E());
 
 		h_Jet_meas_Parton_eta2->Fill(event[iParton_2].eta(), measured_jets[jetid2].eta());
+		h_Jet_meas_Parton_phi2->Fill(event[iParton_2].phi(), measured_jets[jetid2].phi());
 		h_Jet_meas_Parton_E2->Fill(event[iParton_2].e(), measured_jets[jetid2].E());
 	}
 

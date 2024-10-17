@@ -153,6 +153,7 @@ Int_t drawHist() {
 	list_Partons->push_back("h_Partons_types_anti");
 
 	list_Partons->push_back("h_Partons_eta");
+	list_Partons->push_back("h_Partons_phi");
 	list_Partons->push_back("h_Partons_p");
 	list_Partons->push_back("h_Partons_pT");
 
@@ -228,6 +229,7 @@ Int_t drawHist() {
 	list_Jets->push_back("h_Jet_deta");
 
 	list_Jets->push_back("h_Jets_eta");
+	list_Jets->push_back("h_Jets_phi");
 	list_Jets->push_back("h_Jets_p");
 	list_Jets->push_back("h_Jets_pT");
 	list_Jets->push_back("h_Jets_E");
@@ -247,6 +249,7 @@ Int_t drawHist() {
 	list_Jets_meas->push_back("h_Jet_meas_deta");
 
 	list_Jets_meas->push_back("h_Jets_meas_eta");
+	list_Jets_meas->push_back("h_Jets_meas_phi");
 	list_Jets_meas->push_back("h_Jets_meas_p");
 	list_Jets_meas->push_back("h_Jets_meas_pT");
 	list_Jets_meas->push_back("h_Jets_meas_E");
@@ -266,6 +269,7 @@ Int_t drawHist() {
 	list_Jets_meas_no_nHCal->push_back("h_Jet_meas_no_nHCal_deta");
 
 	list_Jets_meas_no_nHCal->push_back("h_Jets_meas_no_nHCal_eta");
+	list_Jets_meas_no_nHCal->push_back("h_Jets_meas_no_nHCal_phi");
 	list_Jets_meas_no_nHCal->push_back("h_Jets_meas_no_nHCal_p");
 	list_Jets_meas_no_nHCal->push_back("h_Jets_meas_no_nHCal_pT");
 	list_Jets_meas_no_nHCal->push_back("h_Jets_meas_no_nHCal_E");
@@ -273,11 +277,14 @@ Int_t drawHist() {
 
 	// measured jets vs. partons
 	list_Jets_Partons->push_back("h_Jets_meas_Partons_eta");
+	list_Jets_Partons->push_back("h_Jets_meas_Partons_phi");
 	list_Jets_Partons->push_back("h_Jets_meas_Partons_E");
 
 	list_Jets_Partons->push_back("h_Jet_meas_Parton_eta1");
+	list_Jets_Partons->push_back("h_Jet_meas_Parton_phi1");
 	list_Jets_Partons->push_back("h_Jet_meas_Parton_E1");
 	list_Jets_Partons->push_back("h_Jet_meas_Parton_eta2");
+	list_Jets_Partons->push_back("h_Jet_meas_Parton_phi2");
 	list_Jets_Partons->push_back("h_Jet_meas_Parton_E2");
 
 

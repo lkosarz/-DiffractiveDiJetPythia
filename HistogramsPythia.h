@@ -11,6 +11,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TH3.h"
+#include "TMath.h"
 
 int CreateHistograms();
 
@@ -126,6 +127,7 @@ TH1F *h_Partons_types;
 TH1F *h_Partons_types_anti;
 
 TH2F *h_Partons_eta;
+TH2F *h_Partons_phi;
 TH2F *h_Partons_p;
 TH2F *h_Partons_pT;
 
@@ -206,6 +208,7 @@ TH1D *h_Jet_eta;
 TH1D *h_Jet_deta;
 
 TH2F *h_Jets_eta;
+TH2F *h_Jets_phi;
 TH2F *h_Jets_p;
 TH2F *h_Jets_pT;
 TH2F *h_Jets_E;
@@ -221,6 +224,7 @@ TH1D *h_Jet_meas_eta;
 TH1D *h_Jet_meas_deta;
 
 TH2F *h_Jets_meas_eta;
+TH2F *h_Jets_meas_phi;
 TH2F *h_Jets_meas_p;
 TH2F *h_Jets_meas_pT;
 TH2F *h_Jets_meas_E;
@@ -243,17 +247,21 @@ TH1D *h_Jet_meas_no_nHCal_eta;
 TH1D *h_Jet_meas_no_nHCal_deta;
 
 TH2F *h_Jets_meas_no_nHCal_eta;
+TH2F *h_Jets_meas_no_nHCal_phi;
 TH2F *h_Jets_meas_no_nHCal_p;
 TH2F *h_Jets_meas_no_nHCal_pT;
 TH2F *h_Jets_meas_no_nHCal_E;
 
 // measured jets vs. partons
 TH2F *h_Jets_meas_Partons_eta;
+TH2F *h_Jets_meas_Partons_phi;
 TH2F *h_Jets_meas_Partons_E;
 
 TH2F *h_Jet_meas_Parton_eta1;
+TH2F *h_Jet_meas_Parton_phi1;
 TH2F *h_Jet_meas_Parton_E1;
 TH2F *h_Jet_meas_Parton_eta2;
+TH2F *h_Jet_meas_Parton_phi2;
 TH2F *h_Jet_meas_Parton_E2;
 
 
@@ -489,6 +497,7 @@ int CreateHistograms()
 
 
 	h_Partons_eta = new TH2F("h_Partons_eta", "Outgoing partons #eta_{1} vs #eta_{2}; #eta_{1} [1]; #eta_{2} [1]; counts", 100, -5.0, 5.0, 100, -5.0, 5.0);
+	h_Partons_phi = new TH2F("h_Partons_phi", "Outgoing partons #phi_{1} vs #phi_{2}; #phi_{1} [1]; #phi_{2} [1]; counts", 200, -2.0*TMath::Pi(), 2.0*TMath::Pi(), 200, -2.0*TMath::Pi(), 2.0*TMath::Pi());
 
 	h_Partons_p = new TH2F("h_Partons_p", "Outgoing partons p_{1} vs p_{2}; p_{1} [GeV/c]; p_{2} [GeV/c]; counts", 200, 0.0, 20.0, 200, 0.0, 20.0);
 	h_Partons_pT = new TH2F("h_Partons_pT", "Outgoing partons p_{T}^{1} vs p_{T}^{2}; p_{T}^{1} [GeV/c]; p_{T}^{2} [GeV/c]; counts", 200, 0.0, 20.0, 200, 0.0, 20.0);
@@ -571,6 +580,7 @@ int CreateHistograms()
 	h_Jet_deta = new TH1D("h_Jet_deta", "Jet #Delta#eta; #Delta#eta [1]; counts", 400, -10.0, 10.0);
 
 	h_Jets_eta = new TH2F("h_Jets_eta", "Jets #eta_{1} vs. #eta_{2}; #eta_{1} [1]; #eta_{2} [1]; counts", 200, -5.0, 5.0, 200, -5.0, 5.0);
+	h_Jets_phi = new TH2F("h_Jets_phi", "Jets #phi_{1} vs. #phi_{2}; #phi_{1} [1]; #phi_{2} [1]; counts", 200, -2.0*TMath::Pi(), 2.0*TMath::Pi(), 200, -2.0*TMath::Pi(), 2.0*TMath::Pi());
 	h_Jets_p = new TH2F("h_Jets_p", "Jets p_{1} vs. p_{2}; p_{1} [GeV/c]; p_{2} [GeV/c]; counts", 200, 0.0, 20.0, 200, 0.0, 20.0);
 	h_Jets_pT = new TH2F("h_Jets_pT", "Jets p_{T}^{1} vs. p_{T}^{2}; p_{T}^{1} [GeV/c]; p_{T}^{2} [GeV/c]; counts", 200, 0.0, 20.0, 200, 0.0, 20.0);
 	h_Jets_E = new TH2F("h_Jets_E", "Jets E_{1} vs. E_{2}; E_{1} [GeV/c]; E_{2} [GeV]; counts", 200, 0.0, 20.0, 200, 0.0, 20.0);
@@ -587,6 +597,7 @@ int CreateHistograms()
 	h_Jet_meas_deta = new TH1D("h_Jet_meas_deta", "Jet measured #Delta#eta; #Delta#eta [1]; counts", 400, -10.0, 10.0);
 
 	h_Jets_meas_eta = new TH2F("h_Jets_meas_eta", "Jets measured #eta_{1} vs. #eta_{2}; #eta_{1} [1]; #eta_{2} [1]; counts", 200, -5.0, 5.0, 200, -5.0, 5.0);
+	h_Jets_meas_phi = new TH2F("h_Jets_meas_phi", "Jets measured #phi_{1} vs. #phi_{2}; #phi_{1} [1]; #phi_{2} [1]; counts", 200, -2.0*TMath::Pi(), 2.0*TMath::Pi(), 200, -2.0*TMath::Pi(), 2.0*TMath::Pi());
 	h_Jets_meas_p = new TH2F("h_Jets_meas_p", "Jets measured p_{1} vs. p_{2}; p_{1} [GeV/c]; p_{2} [GeV/c]; counts", 200, 0.0, 20.0, 200, 0.0, 20.0);
 	h_Jets_meas_pT = new TH2F("h_Jets_meas_pT", "Jets measured p_{T}^{1} vs. p_{T}^{2}; p_{T}^{1} [GeV/c]; p_{T}^{2} [GeV/c]; counts", 200, 0.0, 20.0, 200, 0.0, 20.0);
 	h_Jets_meas_E = new TH2F("h_Jets_meas_E", "Jets measured E_{1} vs. E_{2}; E_{1} [GeV/c]; E_{2} [GeV]; counts", 200, 0.0, 20.0, 200, 0.0, 20.0);
@@ -621,6 +632,7 @@ int CreateHistograms()
 	h_Jet_meas_no_nHCal_deta = new TH1D("h_Jet_meas_no_nHCal_deta", "Jet measured without nHCal #Delta#eta; #Delta#eta [1]; counts", 400, -10.0, 10.0);
 
 	h_Jets_meas_no_nHCal_eta = new TH2F("h_Jets_meas_no_nHCal_eta", "Jets measured without nHCal #eta_{1} vs. #eta_{2}; #eta_{1} [1]; #eta_{2} [1]; counts", 200, -5.0, 5.0, 200, -5.0, 5.0);
+	h_Jets_meas_no_nHCal_phi = new TH2F("h_Jets_meas_no_nHCal_phi", "Jets measured without nHCal #phi_{1} vs. #phi_{2}; #phi_{1} [1]; #phi_{2} [1]; counts", 200, -2.0*TMath::Pi(), 2.0*TMath::Pi(), 200, -2.0*TMath::Pi(), 2.0*TMath::Pi());
 	h_Jets_meas_no_nHCal_p = new TH2F("h_Jets_meas_no_nHCal_p", "Jets measured without nHCal p_{1} vs. p_{2}; p_{1} [GeV/c]; p_{2} [GeV/c]; counts", 200, 0.0, 20.0, 200, 0.0, 20.0);
 	h_Jets_meas_no_nHCal_pT = new TH2F("h_Jets_meas_no_nHCal_pT", "Jets measured without nHCal p_{T}^{1} vs. p_{T}^{2}; p_{T}^{1} [GeV/c]; p_{T}^{2} [GeV/c]; counts", 200, 0.0, 20.0, 200, 0.0, 20.0);
 	h_Jets_meas_no_nHCal_E = new TH2F("h_Jets_meas_no_nHCal_E", "Jets measured without nHCal E_{1} vs. E_{2}; E_{1} [GeV/c]; E_{2} [GeV]; counts", 200, 0.0, 20.0, 200, 0.0, 20.0);
@@ -628,12 +640,15 @@ int CreateHistograms()
 
 	// measured jets vs. partons
 	h_Jets_meas_Partons_eta = new TH2F("h_Jets_meas_Partons_eta", "Jet #eta vs parton #eta; #eta_{parton} [1]; #eta_{jet} [1]; counts", 100, -5.0, 5.0, 100, -5.0, 5.0);
+	h_Jets_meas_Partons_phi = new TH2F("h_Jets_meas_Partons_phi", "Jet #phi vs parton #phi; #phi_{parton} [1]; #phi_{jet} [1]; counts", 200, -2.0*TMath::Pi(), 2.0*TMath::Pi(), 200, -2.0*TMath::Pi(), 2.0*TMath::Pi());
 	h_Jets_meas_Partons_E = new TH2F("h_Jets_meas_Partons_E", "Jet E vs parton E; E_{parton} [GeV]; E_{jet} [GeV]; counts", 100, 0.0, 50.0, 100, 0.0, 50.0);
 
 	h_Jet_meas_Parton_eta1 = new TH2F("h_Jet_meas_Parton_eta1", "Jet #eta vs parton 1 #eta; #eta_{parton} [1]; #eta_{jet} [1]; counts", 100, -5.0, 5.0, 100, -5.0, 5.0);
+	h_Jet_meas_Parton_phi1 = new TH2F("h_Jet_meas_Parton_phi1", "Jet #phi vs parton 1 #phi; #phi_{parton} [1]; #phi_{jet} [1]; counts", 200, -2.0*TMath::Pi(), 2.0*TMath::Pi(), 200, -2.0*TMath::Pi(), 2.0*TMath::Pi());
 	h_Jet_meas_Parton_E1 = new TH2F("h_Jet_meas_Parton_E1", "Jet E vs parton 1 E; E_{parton} [GeV]; E_{jet} [GeV]; counts", 100, 0.0, 50.0, 100, 0.0, 50.0);
 
 	h_Jet_meas_Parton_eta2 = new TH2F("h_Jet_meas_Parton_eta2", "Jet #eta vs parton 2 #eta; #eta_{parton} [1]; #eta_{jet} [1]; counts", 100, -5.0, 5.0, 100, -5.0, 5.0);
+	h_Jet_meas_Parton_phi2 = new TH2F("h_Jet_meas_Parton_phi2", "Jet #phi vs parton 2 #phi; #phi_{parton} [1]; #phi_{jet} [1]; counts", 200, -2.0*TMath::Pi(), 2.0*TMath::Pi(), 200, -2.0*TMath::Pi(), 2.0*TMath::Pi());
 	h_Jet_meas_Parton_E2 = new TH2F("h_Jet_meas_Parton_E2", "Jet E vs parton 2 E; E_{parton} [GeV]; E_{jet} [GeV]; counts", 100, 0.0, 50.0, 100, 0.0, 50.0);
 
 
