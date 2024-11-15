@@ -197,6 +197,8 @@ void drawAcceptanceMeas_x(TString infile = "data/diffractiveDiJets_ep_18x275GeV_
 
 	vec_cnv->at(0)->cd(1);
 	legends->at(0)->Draw("same");
+	vec_cnv->at(0)->cd(2);
+	legends->at(0)->Draw("same");
 	//vec_cnv->at(0)->cd(2);
 	//legends->at(0)->Draw("same");
 
