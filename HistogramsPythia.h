@@ -34,10 +34,17 @@ void MakeLogBins(double *array, int nbins, double binLo, double binHi)
 
 TH1F *h_Events;
 TH1F *h_Events_types;
+TH1F *h_Events_cuts;
 
 TH1F *h_Events_Diffractive;
 
 TH1F *h_Events_nPartonsOut;
+
+TH1F *h_XsecGen;
+TH1F *h_XsecSel;
+
+TH2F *h_XsecGen_err;
+TH2F *h_XsecSel_err;
 
 TH1F *h_Event_nPart_final;
 TH1F *h_Event_nJets;
@@ -298,12 +305,26 @@ int CreateHistograms()
 	h_Events_types->GetXaxis()->SetBinLabel(5, "2 jets in ePIC acc.");
 	h_Events_types->GetXaxis()->SetBinLabel(6, "2 or more jets in ePIC acc.");
 
+	h_Events_cuts = new TH1F("h_Events_cuts", "Number of events; selection; counts", 10, 0.0, 10.0);
+
+	h_Events_cuts->GetXaxis()->SetBinLabel(1, "Generated");
+	h_Events_cuts->GetXaxis()->SetBinLabel(2, "Diffractive A or B");
+	h_Events_cuts->GetXaxis()->SetBinLabel(3, "Hard diffractive A or B");
+	h_Events_cuts->GetXaxis()->SetBinLabel(4, "2 partons in ePIC acc.");
+
 	h_Events_Diffractive = new TH1F("h_Events_Diffractive", "Number of diffractive events; events; counts", 10, 0.0, 10.0);
 
 	h_Events_Diffractive->GetXaxis()->SetBinLabel(1, "Diffractive A");
 	h_Events_Diffractive->GetXaxis()->SetBinLabel(2, "Diffractive B");
 	h_Events_Diffractive->GetXaxis()->SetBinLabel(3, "Hard diffractive A");
 	h_Events_Diffractive->GetXaxis()->SetBinLabel(4, "Hard diffractive B");
+
+	h_XsecGen = new TH1F("h_XsecGen", "Generated event cross-section; \sigma [mb]; counts", 10000, 0.0, 0.001);
+	h_XsecSel = new TH1F("h_XsecSel", "Selected event cross-section; \sigma [mb]; counts", 10000, 0.0, 0.001);
+
+	h_XsecGen_err = new TH2F("h_XsecGen_err", "Generated event cross-section vs. uncertainty; \sigma [mb]; \sigma_{\sigma} [mb]; counts", 10000, 0.0, 0.001, 1000, 0.0, 0.00001);
+	h_XsecSel_err = new TH2F("h_XsecSel_err", "Selected event cross-section vs. uncertainty; \sigma [mb]; \sigma_{\sigma} [mb]; counts", 10000, 0.0, 0.001, 1000, 0.0, 0.00001);
+
 
 	h_Events_nPartonsOut = new TH1F("h_Events_nPartonsOut", "Number of outgoing partons; N_{out} [1]; counts", 21, -0.5, 20.5);
 

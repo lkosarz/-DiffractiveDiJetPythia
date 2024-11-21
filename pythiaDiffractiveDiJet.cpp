@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     //const char* xmlDB    = "/users/PAS2524/lkosarz/Pythia/pythia8312/share/Pythia8/xmldoc";
     const char* xmlDB    = "/opt/local/share/Pythia8/xmldoc";
     
-    bool WriteHepMC = false;
+    bool WriteHepMC = true;
     bool WriteTree = false;
 
 
@@ -142,13 +142,24 @@ int main(int argc, char* argv[]) {
             break;
         }
 
+        h_Events_cuts->Fill(0);
+
+        h_XsecGen->Fill(pythia->info.sigmaGen());
+        h_XsecGen_err->Fill(pythia->info.sigmaGen(), pythia->info.sigmaErr());
+
         bool isDiffractive = pythia->info.isDiffractiveA() || pythia->info.isDiffractiveB();
         bool isHardDiffractive = pythia->info.isHardDiffractiveA() || pythia->info.isHardDiffractiveB();
 
         //if (isDiffractive) cout<<"Diffractive"<<endl;
         //if (isHardDiffractive) cout<<"Hard diffractive"<<endl;
 
+        if (isDiffractive) h_Events_cuts->Fill(1);
+        if (isHardDiffractive) h_Events_cuts->Fill(2);
+
     	if(!(isDiffractive || isHardDiffractive)) continue;
+
+        h_XsecSel->Fill(pythia->info.sigmaGen());
+        h_XsecSel_err->Fill(pythia->info.sigmaGen(), pythia->info.sigmaErr());
 
         MakeEvent(pythia, eventStore, ievent, WriteTree);  // in MakeEvent we deal with the whole event and return
 
@@ -574,6 +585,8 @@ int MakeEvent(Pythia *pythia, PythiaEvent *eventStore, int iev, bool writeTree)
     if(nJetsInAcc == 1) h_Events_types->Fill(3);
     if(nJetsInAcc == 2) h_Events_types->Fill(4);
     if(nJetsInAcc >= 2) h_Events_types->Fill(5);
+
+    if(Parton_1_inAcc && Parton_2_inAcc) h_Events_cuts->Fill(3);
 
     h_Events_nPartonsOut->Fill(nPartonsOut);
 
