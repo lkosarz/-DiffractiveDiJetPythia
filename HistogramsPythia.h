@@ -319,11 +319,11 @@ int CreateHistograms()
 	h_Events_Diffractive->GetXaxis()->SetBinLabel(3, "Hard diffractive A");
 	h_Events_Diffractive->GetXaxis()->SetBinLabel(4, "Hard diffractive B");
 
-	h_XsecGen = new TH1F("h_XsecGen", "Generated event cross-section; \sigma [mb]; counts", 10000, 0.0, 0.001);
-	h_XsecSel = new TH1F("h_XsecSel", "Selected event cross-section; \sigma [mb]; counts", 10000, 0.0, 0.001);
+	h_XsecGen = new TH1F("h_XsecGen", "Generated event cross-section; #sigma [mb]; counts", 10000, 0.0, 0.001);
+	h_XsecSel = new TH1F("h_XsecSel", "Selected event cross-section; #sigma [mb]; counts", 10000, 0.0, 0.001);
 
-	h_XsecGen_err = new TH2F("h_XsecGen_err", "Generated event cross-section vs. uncertainty; \sigma [mb]; \sigma_{\sigma} [mb]; counts", 10000, 0.0, 0.001, 1000, 0.0, 0.00001);
-	h_XsecSel_err = new TH2F("h_XsecSel_err", "Selected event cross-section vs. uncertainty; \sigma [mb]; \sigma_{\sigma} [mb]; counts", 10000, 0.0, 0.001, 1000, 0.0, 0.00001);
+	h_XsecGen_err = new TH2F("h_XsecGen_err", "Generated event cross-section vs. uncertainty; #sigma [mb]; #sigma_{#sigma} [mb]; counts", 10000, 0.0, 0.001, 1000, 0.0, 0.00001);
+	h_XsecSel_err = new TH2F("h_XsecSel_err", "Selected event cross-section vs. uncertainty; #sigma [mb]; #sigma_{#sigma} [mb]; counts", 10000, 0.0, 0.001, 1000, 0.0, 0.00001);
 
 
 	h_Events_nPartonsOut = new TH1F("h_Events_nPartonsOut", "Number of outgoing partons; N_{out} [1]; counts", 21, -0.5, 20.5);
