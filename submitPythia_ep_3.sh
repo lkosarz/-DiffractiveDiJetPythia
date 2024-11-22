@@ -1,9 +1,11 @@
 #!/bin/bash
 
+#SBATCH --account=PAS2524
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
 #SBATCH --job-name=Pythia_ep
+#SBATCH --account=PAS2524
 #####SBATCH --mail.type=BEGIN,END,FAIL
 #SBATCH --output=output3/stdout/%j.out
 #SBATCH --error=output3/stderr/%j.err

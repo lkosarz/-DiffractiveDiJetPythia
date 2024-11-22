@@ -36,6 +36,14 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 		//drawOpt = "e";
 		//logScale=kTRUE;
 	}
+	if(!name.CompareTo("h_Events_cuts")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "eTEXT45";
+		//objH1->GetXaxis()->SetRangeUser(0.0, 1.0);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		//logScale=kTRUE;
+	}
 
 	if(!name.CompareTo("h_Events_Diffractive")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
@@ -45,6 +53,46 @@ TString getHistDrawOpt(TObject *obj, Bool_t &logScale, Bool_t &logScaleX, Bool_t
 		//drawOpt = "e";
 		//logScale=kTRUE;
 	}
+
+	if(!name.CompareTo("h_XsecGen")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		objH1->GetXaxis()->SetRangeUser(0.0, 0.00015);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		//logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_XsecSel")) {
+		TH1 *objH1 = dynamic_cast<TH1*>(obj);
+		drawOpt = "e";
+		objH1->GetXaxis()->SetRangeUser(0.0, 0.00015);
+		//objH1->RebinX(16);
+		//drawOpt = "e";
+		//logScale=kTRUE;
+	}
+	if(!name.CompareTo("h_XsecGen_err")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		objH2->GetXaxis()->SetRangeUser(0.0, 0.00015);
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		//logScaleX=kTRUE;
+	}
+	if(!name.CompareTo("h_XsecSel_err")) {
+		TH2 *objH2 = dynamic_cast<TH2*>(obj);
+		drawOpt = "colz";
+		//objH2->RebinY(4);
+		//objH2->RebinX(4);
+		//objH2->GetYaxis()->SetRangeUser(0.0, 1.1);
+		objH2->GetXaxis()->SetRangeUser(0.0, 0.00015);
+		//drawOpt = "e";
+		//logScale=kTRUE;
+		//logScaleX=kTRUE;
+	}
+
 	if(!name.CompareTo("h_Events_nPartonsOut")) {
 		TH1 *objH1 = dynamic_cast<TH1*>(obj);
 		drawOpt = "e";

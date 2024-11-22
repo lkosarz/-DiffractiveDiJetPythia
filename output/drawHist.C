@@ -72,8 +72,14 @@ Int_t drawHist() {
 	// Event
 	list_Events->push_back("h_Events");
 	list_Events->push_back("h_Events_types");
+	list_Events->push_back("h_Events_cuts");
 	list_Events->push_back("h_Events_Diffractive");
 	list_Events->push_back("h_Events_nPartonsOut");
+
+	list_Events->push_back("h_XsecGen");
+	list_Events->push_back("h_XsecSel");
+	list_Events->push_back("h_XsecGen_err");
+	list_Events->push_back("h_XsecSel_err");
 
 	list_Events->push_back("h_Event_nPart_final");
 	list_Events->push_back("h_Event_nJets");
@@ -313,6 +319,7 @@ Int_t drawHist() {
 	//file = "data/diffractiveDiJets_ep_18x275GeV_pT0GeV_full.root";
 	//file = "data/diffractiveDiJets_ep_18x275GeV_ee_kT_full.root";
 	//file = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_full.root";
+	file = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_pT4GeV_full.root";
 	file = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_pT4GeV_full.root";
 	//file = "data/diffractiveDiJets_ep_18x275GeV_anti_kT_E4GeV_full.root";
 	//file = "data/diffractiveDiJets_ep_18x275GeV_ee_genkT_full.root";
